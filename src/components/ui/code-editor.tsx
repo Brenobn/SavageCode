@@ -51,7 +51,7 @@ export function CodeEditor({
         <span className="size-3 rounded-full bg-accent-green" />
       </div>
 
-      <div className="flex h-[320px]">
+      <div className="flex h-80">
         <div className="flex w-12 shrink-0 flex-col items-end gap-2 border-r border-border-primary bg-bg-surface px-3 py-4 font-mono text-xs text-text-tertiary">
           {Array.from({ length: lineCount }).map((_, index) => (
             <span key={`line-${index + 1}`}>{index + 1}</span>

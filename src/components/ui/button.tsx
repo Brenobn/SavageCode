@@ -6,12 +6,12 @@ const buttonVariants = tv({
   variants: {
     variant: {
       primary:
-        "border-transparent bg-accent-green px-6 py-2.5 text-[13px] font-medium text-bg-page hover:bg-green-primary",
+        "border-transparent bg-accent-green px-6 py-2.5 text-[13px] font-medium text-bg-page enabled:hover:bg-green-primary",
       secondary:
-        "border-border-primary bg-transparent px-4 py-2 text-xs font-normal text-text-primary hover:bg-zinc-900",
-      link: "border-border-primary bg-transparent px-3 py-1.5 text-xs font-normal text-text-secondary hover:text-text-primary",
+        "border-border-primary bg-transparent px-4 py-2 text-xs font-normal text-text-primary enabled:hover:bg-zinc-900",
+      link: "border-border-primary bg-transparent px-3 py-1.5 text-xs font-normal text-text-secondary enabled:hover:text-text-primary",
       danger:
-        "border-transparent bg-accent-red px-6 py-2.5 text-[13px] font-medium text-white hover:bg-red-500",
+        "border-transparent bg-accent-red px-6 py-2.5 text-[13px] font-medium text-white enabled:hover:bg-red-500",
     },
     size: {
       sm: "",

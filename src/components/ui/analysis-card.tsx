@@ -1,6 +1,10 @@
 import type { HTMLAttributes } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import { StatusBadge } from "./status-badge";
+import {
+  StatusBadgeDot,
+  StatusBadgeRoot,
+  StatusBadgeText,
+} from "./status-badge";
 
 const analysisCardVariants = tv({
   base: "w-full space-y-3 border border-border-primary p-5",
@@ -16,32 +20,58 @@ const analysisCardVariants = tv({
   },
 });
 
-export interface AnalysisCardProps
+export interface AnalysisCardRootProps
   extends HTMLAttributes<HTMLElement>,
-    VariantProps<typeof analysisCardVariants> {
-  badgeLabel: string;
-  description: string;
-  title: string;
-}
+    VariantProps<typeof analysisCardVariants> {}
 
-export function AnalysisCard({
-  badgeLabel,
+export function AnalysisCardRoot({
   className,
-  description,
-  title,
   tone,
   ...props
-}: AnalysisCardProps) {
+}: AnalysisCardRootProps) {
   return (
-    <article className={analysisCardVariants({ tone, className })} {...props}>
-      <StatusBadge label={badgeLabel} variant={tone} />
+    <article className={analysisCardVariants({ tone, className })} {...props} />
+  );
+}
 
-      <h3 className="font-mono text-[13px] text-text-primary">{title}</h3>
+export interface AnalysisCardBadgeProps {
+  children: string;
+  tone?: VariantProps<typeof analysisCardVariants>["tone"];
+}
 
-      <p className="font-sans text-xs leading-5 text-text-secondary">
-        {description}
-      </p>
-    </article>
+export function AnalysisCardBadge({
+  children,
+  tone = "critical",
+}: AnalysisCardBadgeProps) {
+  return (
+    <StatusBadgeRoot tone={tone}>
+      <StatusBadgeDot tone={tone} />
+      <StatusBadgeText>{children}</StatusBadgeText>
+    </StatusBadgeRoot>
+  );
+}
+
+export function AnalysisCardTitle({
+  className,
+  ...props
+}: HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={`font-mono text-[13px] text-text-primary ${className ?? ""}`}
+      {...props}
+    />
+  );
+}
+
+export function AnalysisCardDescription({
+  className,
+  ...props
+}: HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`font-sans text-xs leading-5 text-text-secondary ${className ?? ""}`}
+      {...props}
+    />
   );
 }
 

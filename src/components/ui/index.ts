@@ -1,10 +1,12 @@
 export {
-  AnalysisCard,
-  type AnalysisCardProps,
+  AnalysisCardBadge,
+  AnalysisCardDescription,
+  AnalysisCardRoot,
+  type AnalysisCardRootProps,
+  AnalysisCardTitle,
   analysisCardVariants,
 } from "./analysis-card";
 export { Button, type ButtonProps, buttonVariants } from "./button";
-export { CodeBlock, type CodeBlockProps } from "./code-block";
 export { CodeEditor, type CodeEditorProps } from "./code-editor";
 export { DiffLine, type DiffLineProps, diffLineVariants } from "./diff-line";
 export {
@@ -13,15 +15,36 @@ export {
   scoreRingVariants,
 } from "./score-ring";
 export {
-  SectionTitle,
-  type SectionTitleProps,
-  sectionTitleVariants,
+  SectionTitleRoot,
+  type SectionTitleRootProps,
+  SectionTitleSlash,
+  SectionTitleText,
+  sectionTitleRootVariants,
 } from "./section-title";
 export {
-  StatusBadge,
-  type StatusBadgeProps,
-  statusBadgeVariants,
+  StatusBadgeDot,
+  type StatusBadgeDotProps,
+  StatusBadgeRoot,
+  type StatusBadgeRootProps,
+  StatusBadgeText,
+  statusBadgeDotVariants,
+  statusBadgeRootVariants,
 } from "./status-badge";
-export { TableRow, type TableRowProps, tableRowVariants } from "./table-row";
-export { Toggle, type ToggleProps } from "./toggle";
+export {
+  TableRowCode,
+  TableRowLanguage,
+  TableRowRank,
+  TableRowRoot,
+  type TableRowRootProps,
+  TableRowScore,
+  type TableRowScoreProps,
+  tableRowVariants,
+} from "./table-row";
+export {
+  ToggleControl,
+  ToggleLabel,
+  ToggleRoot,
+  type ToggleRootProps,
+  ToggleThumb,
+} from "./toggle";
 export { TopNavbar } from "./top-navbar";

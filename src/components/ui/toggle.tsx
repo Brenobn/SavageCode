@@ -1,34 +1,54 @@
 "use client";
 
 import { Switch } from "@base-ui/react/switch";
-import { type ComponentPropsWithoutRef, useState } from "react";
+import {
+  type ComponentPropsWithoutRef,
+  createContext,
+  type HTMLAttributes,
+  type ReactNode,
+  useContext,
+  useState,
+} from "react";
 
-export interface ToggleProps
-  extends Omit<
-    ComponentPropsWithoutRef<typeof Switch.Root>,
-    "children" | "className" | "checked" | "defaultChecked" | "onCheckedChange"
-  > {
+interface ToggleContextValue {
+  checked: boolean;
+  setChecked: (checked: boolean) => void;
+}
+
+const ToggleContext = createContext<ToggleContextValue | null>(null);
+
+function useToggleContext() {
+  const context = useContext(ToggleContext);
+
+  if (!context) {
+    throw new Error("Toggle components must be used within ToggleRoot.");
+  }
+
+  return context;
+}
+
+export interface ToggleRootProps {
   checked?: boolean;
+  children: ReactNode;
+  className?: string;
   defaultChecked?: boolean;
-  label?: string;
   onCheckedChange?: (checked: boolean) => void;
 }
 
-export function Toggle({
+export function ToggleRoot({
   checked,
+  children,
+  className,
   defaultChecked,
-  disabled,
-  label = "roast mode",
   onCheckedChange,
-  ...props
-}: ToggleProps) {
+}: ToggleRootProps) {
   const [internalChecked, setInternalChecked] = useState(
     defaultChecked ?? false,
   );
   const isControlled = checked !== undefined;
   const currentChecked = isControlled ? checked : internalChecked;
 
-  const handleCheckedChange = (nextChecked: boolean) => {
+  const setChecked = (nextChecked: boolean) => {
     if (!isControlled) {
       setInternalChecked(nextChecked);
     }
@@ -36,27 +56,58 @@ export function Toggle({
     onCheckedChange?.(nextChecked);
   };
 
-  return (
-    <div className="inline-flex items-center gap-3">
-      <Switch.Root
-        checked={currentChecked}
-        className="inline-flex h-5.5 w-10 items-center rounded-full bg-border-primary p-0.75 transition-colors data-checked:bg-accent-green"
-        disabled={disabled}
-        onCheckedChange={handleCheckedChange}
-        {...props}
-      >
-        <Switch.Thumb className="size-4 rounded-full bg-text-secondary transition-all data-checked:translate-x-4.5 data-checked:bg-bg-page" />
-      </Switch.Root>
+  const contextValue = { checked: currentChecked, setChecked };
 
-      <span
-        className={
-          currentChecked
-            ? "font-mono text-xs text-accent-green"
-            : "font-mono text-xs text-text-secondary"
-        }
-      >
-        {label}
-      </span>
-    </div>
+  return (
+    <ToggleContext.Provider value={contextValue}>
+      <div className={`inline-flex items-center gap-3 ${className ?? ""}`}>
+        {children}
+      </div>
+    </ToggleContext.Provider>
+  );
+}
+
+export function ToggleControl({
+  className,
+  ...props
+}: Omit<
+  ComponentPropsWithoutRef<typeof Switch.Root>,
+  "checked" | "onCheckedChange"
+>) {
+  const { checked, setChecked } = useToggleContext();
+
+  return (
+    <Switch.Root
+      checked={checked}
+      className={`inline-flex h-5.5 w-10 items-center rounded-full bg-border-primary p-0.75 transition-colors data-checked:bg-accent-green ${className ?? ""}`}
+      onCheckedChange={setChecked}
+      {...props}
+    />
+  );
+}
+
+export function ToggleThumb({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof Switch.Thumb>) {
+  return (
+    <Switch.Thumb
+      className={`size-4 rounded-full bg-text-secondary transition-all data-checked:translate-x-4.5 data-checked:bg-bg-page ${className ?? ""}`}
+      {...props}
+    />
+  );
+}
+
+export function ToggleLabel({
+  className,
+  ...props
+}: HTMLAttributes<HTMLSpanElement>) {
+  const { checked } = useToggleContext();
+
+  return (
+    <span
+      className={`${checked ? "text-accent-green" : "text-text-secondary"} font-mono text-xs ${className ?? ""}`}
+      {...props}
+    />
   );
 }

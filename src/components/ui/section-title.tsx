@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
-const sectionTitleVariants = tv({
+const sectionTitleRootVariants = tv({
   base: "inline-flex items-center gap-2 font-mono text-sm font-bold",
   variants: {
     tone: {
@@ -16,24 +16,36 @@ const sectionTitleVariants = tv({
   },
 });
 
-export interface SectionTitleProps
+export interface SectionTitleRootProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof sectionTitleVariants> {
-  label: string;
-}
+    VariantProps<typeof sectionTitleRootVariants> {}
 
-export function SectionTitle({
+export function SectionTitleRoot({
   className,
-  label,
   tone,
   ...props
-}: SectionTitleProps) {
+}: SectionTitleRootProps) {
   return (
-    <div className={sectionTitleVariants({ tone, className })} {...props}>
-      <span className="text-accent-green">{"//"}</span>
-      <span>{label}</span>
-    </div>
+    <div className={sectionTitleRootVariants({ tone, className })} {...props} />
   );
 }
 
-export { sectionTitleVariants };
+export function SectionTitleSlash({
+  className,
+  ...props
+}: HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span className={`text-accent-green ${className ?? ""}`} {...props}>
+      {"//"}
+    </span>
+  );
+}
+
+export function SectionTitleText({
+  className,
+  ...props
+}: HTMLAttributes<HTMLSpanElement>) {
+  return <span className={className} {...props} />;
+}
+
+export { sectionTitleRootVariants };

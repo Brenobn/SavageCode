@@ -1,10 +1,10 @@
 import type { HTMLAttributes } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
-const statusBadgeVariants = tv({
+const statusBadgeRootVariants = tv({
   base: "inline-flex items-center gap-2 font-mono text-xs",
   variants: {
-    variant: {
+    tone: {
       critical: "text-accent-red",
       warning: "text-accent-amber",
       good: "text-accent-green",
@@ -12,14 +12,14 @@ const statusBadgeVariants = tv({
     },
   },
   defaultVariants: {
-    variant: "muted",
+    tone: "muted",
   },
 });
 
 const statusBadgeDotVariants = tv({
   base: "size-2 rounded-full",
   variants: {
-    variant: {
+    tone: {
       critical: "bg-accent-red",
       warning: "bg-accent-amber",
       good: "bg-accent-green",
@@ -27,28 +27,47 @@ const statusBadgeDotVariants = tv({
     },
   },
   defaultVariants: {
-    variant: "muted",
+    tone: "muted",
   },
 });
 
-export interface StatusBadgeProps
+export interface StatusBadgeRootProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof statusBadgeVariants> {
-  label: string;
-}
+    VariantProps<typeof statusBadgeRootVariants> {}
 
-export function StatusBadge({
+export function StatusBadgeRoot({
   className,
-  label,
-  variant,
+  tone,
   ...props
-}: StatusBadgeProps) {
+}: StatusBadgeRootProps) {
   return (
-    <div className={statusBadgeVariants({ variant, className })} {...props}>
-      <span aria-hidden className={statusBadgeDotVariants({ variant })} />
-      <span>{label}</span>
-    </div>
+    <div className={statusBadgeRootVariants({ tone, className })} {...props} />
   );
 }
 
-export { statusBadgeVariants };
+export interface StatusBadgeDotProps
+  extends HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof statusBadgeDotVariants> {}
+
+export function StatusBadgeDot({
+  className,
+  tone,
+  ...props
+}: StatusBadgeDotProps) {
+  return (
+    <span
+      aria-hidden
+      className={statusBadgeDotVariants({ tone, className })}
+      {...props}
+    />
+  );
+}
+
+export function StatusBadgeText({
+  className,
+  ...props
+}: HTMLAttributes<HTMLSpanElement>) {
+  return <span className={className} {...props} />;
+}
+
+export { statusBadgeDotVariants, statusBadgeRootVariants };

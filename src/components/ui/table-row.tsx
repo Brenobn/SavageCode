@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const tableRowVariants = tv({
@@ -30,34 +31,67 @@ const scoreTextVariants = tv({
   },
 });
 
-export interface TableRowProps extends VariantProps<typeof tableRowVariants> {
-  codePreview: string;
-  language: string;
-  rank: string;
-  score: string;
+export interface TableRowRootProps
+  extends HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof tableRowVariants> {}
+
+export function TableRowRoot({
+  className,
+  scoreTone,
+  ...props
+}: TableRowRootProps) {
+  return (
+    <div className={tableRowVariants({ scoreTone, className })} {...props} />
+  );
 }
 
-export function TableRow({
-  codePreview,
-  language,
-  rank,
-  score,
-  scoreTone,
-}: TableRowProps) {
+export function TableRowRank({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={tableRowVariants({ scoreTone })}>
-      <div className="w-10 text-[13px] text-text-tertiary">{rank}</div>
+    <div
+      className={`w-10 text-[13px] text-text-tertiary ${className ?? ""}`}
+      {...props}
+    />
+  );
+}
 
-      <div className="w-15">
-        <span className={scoreTextVariants({ scoreTone })}>{score}</span>
-      </div>
+export interface TableRowScoreProps
+  extends HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof scoreTextVariants> {}
 
-      <div className="min-w-0 flex-1 text-xs text-text-secondary">
-        <p className="truncate">{codePreview}</p>
-      </div>
+export function TableRowScore({
+  className,
+  scoreTone,
+  ...props
+}: TableRowScoreProps) {
+  return (
+    <span className={scoreTextVariants({ scoreTone, className })} {...props} />
+  );
+}
 
-      <div className="w-25 text-xs text-text-tertiary">{language}</div>
-    </div>
+export function TableRowCode({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`min-w-0 flex-1 text-xs text-text-secondary ${className ?? ""}`}
+      {...props}
+    />
+  );
+}
+
+export function TableRowLanguage({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`w-25 text-xs text-text-tertiary ${className ?? ""}`}
+      {...props}
+    />
   );
 }
 
