@@ -2,14 +2,16 @@ import { type ButtonHTMLAttributes, forwardRef } from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const buttonVariants = tv({
-  base: "font-primary inline-flex items-center justify-center whitespace-nowrap border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  base: "font-mono inline-flex items-center justify-center whitespace-nowrap border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   variants: {
     variant: {
       primary:
-        "border-transparent bg-[var(--color-accent-green)] px-6 py-2.5 text-[13px] font-medium text-[#0A0A0A] hover:bg-emerald-400",
+        "border-transparent bg-accent-green px-6 py-2.5 text-[13px] font-medium text-bg-page hover:bg-green-primary",
       secondary:
-        "border-[var(--color-border-primary)] bg-transparent px-4 py-2 text-xs font-normal text-[var(--color-text-primary)] hover:bg-zinc-900",
-      link: "border-[var(--color-border-primary)] bg-transparent px-3 py-1.5 text-xs font-normal text-[var(--color-text-secondary)] hover:text-[#9CA3AF]",
+        "border-border-primary bg-transparent px-4 py-2 text-xs font-normal text-text-primary hover:bg-zinc-900",
+      link: "border-border-primary bg-transparent px-3 py-1.5 text-xs font-normal text-text-secondary hover:text-text-primary",
+      danger:
+        "border-transparent bg-accent-red px-6 py-2.5 text-[13px] font-medium text-white hover:bg-red-500",
     },
     size: {
       sm: "",

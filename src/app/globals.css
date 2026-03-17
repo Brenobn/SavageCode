@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
-:root {
+@theme {
   --color-bg-page: #0a0a0a;
   --color-bg-surface: #0f0f0f;
   --color-bg-elevated: #1a1a1a;
   --color-bg-input: #111111;
+
+  --color-diff-added-bg: #0a1a0f;
+  --color-diff-removed-bg: #1a0a0a;
 
   --color-text-primary: #fafafa;
   --color-text-secondary: #6b7280;
@@ -29,6 +32,13 @@
 
   --color-white: #ffffff;
   --color-black: #000000;
+
+  --font-mono:
+    var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular,
+    Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 @layer base {
@@ -38,15 +48,6 @@
   }
 
   body {
-    background-color: var(--color-bg-page);
-    color: var(--color-text-primary);
+    @apply bg-bg-page text-text-primary;
   }
-}
-
-.font-primary {
-  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
-}
-
-.font-secondary {
-  font-family: var(--font-geist), "Geist", sans-serif;
 }
