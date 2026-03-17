@@ -1,9 +1,22 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
 import {
   Button,
   CodeEditor,
-  SectionTitle,
-  TableRow,
-  Toggle,
+  SectionTitleRoot,
+  SectionTitleSlash,
+  SectionTitleText,
+  TableRowCode,
+  TableRowLanguage,
+  TableRowRank,
+  TableRowRoot,
+  TableRowScore,
+  ToggleControl,
+  ToggleLabel,
+  ToggleRoot,
+  ToggleThumb,
 } from "@/components/ui";
 
 const codeSample = [
@@ -45,6 +58,9 @@ const leaderboardRows = [
 ];
 
 export default function Home() {
+  const [code, setCode] = useState(codeSample);
+  const hasCode = useMemo(() => code.trim().length > 0, [code]);
+
   return (
     <main className="bg-bg-page text-text-primary">
       <div className="mx-auto w-full max-w-6xl px-10 pt-20 pb-0">
@@ -61,17 +77,24 @@ export default function Home() {
             </p>
           </div>
 
-          <CodeEditor defaultValue={codeSample} />
+          <CodeEditor onValueChange={setCode} value={code} />
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Toggle defaultChecked label="roast mode" />
+              <ToggleRoot defaultChecked>
+                <ToggleControl>
+                  <ToggleThumb />
+                </ToggleControl>
+                <ToggleLabel>roast mode</ToggleLabel>
+              </ToggleRoot>
               <span className="font-sans text-xs text-text-tertiary">
                 {"// maximum sarcasm enabled"}
               </span>
             </div>
 
-            <Button variant="primary">$ roast_my_code</Button>
+            <Button disabled={!hasCode} variant="primary">
+              $ roast_my_code
+            </Button>
           </div>
 
           <div className="flex items-center justify-center gap-6 pb-14 font-sans text-xs text-text-tertiary">
@@ -83,7 +106,10 @@ export default function Home() {
 
         <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 pb-16">
           <div className="flex items-center justify-between">
-            <SectionTitle label="shame_leaderboard" />
+            <SectionTitleRoot>
+              <SectionTitleSlash />
+              <SectionTitleText>shame_leaderboard</SectionTitleText>
+            </SectionTitleRoot>
             <Button variant="link">$ view_all &gt;&gt;</Button>
           </div>
 
@@ -100,19 +126,32 @@ export default function Home() {
             </div>
 
             {leaderboardRows.map((row) => (
-              <TableRow
-                codePreview={row.codePreview}
-                key={row.rank}
-                language={row.language}
-                rank={row.rank}
-                score={row.score}
-                scoreTone={row.scoreTone}
-              />
+              <TableRowRoot key={row.rank} scoreTone={row.scoreTone}>
+                <TableRowRank>{row.rank}</TableRowRank>
+
+                <div className="w-15">
+                  <TableRowScore scoreTone={row.scoreTone}>
+                    {row.score}
+                  </TableRowScore>
+                </div>
+
+                <TableRowCode>
+                  <p className="truncate">{row.codePreview}</p>
+                </TableRowCode>
+
+                <TableRowLanguage>{row.language}</TableRowLanguage>
+              </TableRowRoot>
             ))}
           </div>
 
-          <div className="flex justify-center py-4 font-sans text-xs text-text-tertiary">
-            <span>showing top 3 of 2,847 - view full leaderboard &gt;&gt;</span>
+          <div className="flex justify-center gap-1 py-4 font-sans text-xs text-text-tertiary">
+            <span>showing top 3 of 2,847 -</span>
+            <Link
+              className="text-text-secondary underline-offset-4 hover:underline"
+              href="#"
+            >
+              view full leaderboard &gt;&gt;
+            </Link>
           </div>
         </section>
       </div>

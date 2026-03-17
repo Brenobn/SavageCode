@@ -1,14 +1,28 @@
 import {
-  AnalysisCard,
+  AnalysisCardBadge,
+  AnalysisCardDescription,
+  AnalysisCardRoot,
+  AnalysisCardTitle,
   Button,
-  CodeBlock,
   DiffLine,
   ScoreRing,
-  SectionTitle,
-  StatusBadge,
-  TableRow,
-  Toggle,
+  SectionTitleRoot,
+  SectionTitleSlash,
+  SectionTitleText,
+  StatusBadgeDot,
+  StatusBadgeRoot,
+  StatusBadgeText,
+  TableRowCode,
+  TableRowLanguage,
+  TableRowRank,
+  TableRowRoot,
+  TableRowScore,
+  ToggleControl,
+  ToggleLabel,
+  ToggleRoot,
+  ToggleThumb,
 } from "@/components/ui";
+import { CodeBlock } from "@/components/ui/code-block";
 
 const buttonVariants = ["primary", "secondary", "link", "danger"] as const;
 const buttonSizes = ["sm", "md", "lg", "icon"] as const;
@@ -35,7 +49,10 @@ export default function ComponentsPage() {
         </header>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="buttons" />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>buttons</SectionTitleText>
+          </SectionTitleRoot>
           <div className="space-y-5">
             {buttonVariants.map((variant) => (
               <div className="space-y-3" key={variant}>
@@ -64,35 +81,75 @@ export default function ComponentsPage() {
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="toggle" />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>toggle</SectionTitleText>
+          </SectionTitleRoot>
           <div className="flex flex-wrap items-center gap-8">
-            <Toggle defaultChecked label="roast mode" />
-            <Toggle label="roast mode" />
+            <ToggleRoot defaultChecked>
+              <ToggleControl>
+                <ToggleThumb />
+              </ToggleControl>
+              <ToggleLabel>roast mode</ToggleLabel>
+            </ToggleRoot>
+
+            <ToggleRoot>
+              <ToggleControl>
+                <ToggleThumb />
+              </ToggleControl>
+              <ToggleLabel>roast mode</ToggleLabel>
+            </ToggleRoot>
           </div>
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="badge_status" />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>badge_status</SectionTitleText>
+          </SectionTitleRoot>
           <div className="flex flex-wrap items-center gap-6">
-            <StatusBadge label="critical" variant="critical" />
-            <StatusBadge label="warning" variant="warning" />
-            <StatusBadge label="good" variant="good" />
-            <StatusBadge label="needs_serious_help" variant="critical" />
+            <StatusBadgeRoot tone="critical">
+              <StatusBadgeDot tone="critical" />
+              <StatusBadgeText>critical</StatusBadgeText>
+            </StatusBadgeRoot>
+            <StatusBadgeRoot tone="warning">
+              <StatusBadgeDot tone="warning" />
+              <StatusBadgeText>warning</StatusBadgeText>
+            </StatusBadgeRoot>
+            <StatusBadgeRoot tone="good">
+              <StatusBadgeDot tone="good" />
+              <StatusBadgeText>good</StatusBadgeText>
+            </StatusBadgeRoot>
+            <StatusBadgeRoot tone="critical">
+              <StatusBadgeDot tone="critical" />
+              <StatusBadgeText>needs_serious_help</StatusBadgeText>
+            </StatusBadgeRoot>
           </div>
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="cards" />
-          <AnalysisCard
-            badgeLabel="critical"
-            description="The var keyword is function-scoped rather than block-scoped, which can lead to unexpected behavior and bugs. Modern JavaScript uses const for immutable bindings and let for mutable ones."
-            title="using var instead of const/let"
-            tone="critical"
-          />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>cards</SectionTitleText>
+          </SectionTitleRoot>
+          <AnalysisCardRoot tone="critical">
+            <AnalysisCardBadge tone="critical">critical</AnalysisCardBadge>
+            <AnalysisCardTitle>
+              using var instead of const/let
+            </AnalysisCardTitle>
+            <AnalysisCardDescription>
+              The var keyword is function-scoped rather than block-scoped, which
+              can lead to unexpected behavior and bugs. Modern JavaScript uses
+              const for immutable bindings and let for mutable ones.
+            </AnalysisCardDescription>
+          </AnalysisCardRoot>
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="code_block" />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>code_block</SectionTitleText>
+          </SectionTitleRoot>
           <CodeBlock
             code={codeSample}
             fileName="calculate.js"
@@ -101,7 +158,10 @@ export default function ComponentsPage() {
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="diff_line" />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>diff_line</SectionTitleText>
+          </SectionTitleRoot>
           <div className="space-y-1 overflow-hidden border border-border-primary">
             <DiffLine code="var total = 0;" variant="removed" />
             <DiffLine code="const total = 0;" variant="added" />
@@ -113,20 +173,31 @@ export default function ComponentsPage() {
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="table_row" />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>table_row</SectionTitleText>
+          </SectionTitleRoot>
           <div className="overflow-hidden border border-border-primary">
-            <TableRow
-              codePreview="function calculateTotal(items) { var total = 0; ..."
-              language="javascript"
-              rank="#1"
-              score="2.1"
-              scoreTone="critical"
-            />
+            <TableRowRoot scoreTone="critical">
+              <TableRowRank>#1</TableRowRank>
+              <div className="w-15">
+                <TableRowScore scoreTone="critical">2.1</TableRowScore>
+              </div>
+              <TableRowCode>
+                <p className="truncate">
+                  function calculateTotal(items) {`{`} var total = 0; ...
+                </p>
+              </TableRowCode>
+              <TableRowLanguage>javascript</TableRowLanguage>
+            </TableRowRoot>
           </div>
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">
-          <SectionTitle label="score_ring" />
+          <SectionTitleRoot>
+            <SectionTitleSlash />
+            <SectionTitleText>score_ring</SectionTitleText>
+          </SectionTitleRoot>
           <ScoreRing value={3.5} />
         </section>
       </div>
