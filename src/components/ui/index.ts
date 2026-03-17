@@ -5,6 +5,7 @@ export {
 } from "./analysis-card";
 export { Button, type ButtonProps, buttonVariants } from "./button";
 export { CodeBlock, type CodeBlockProps } from "./code-block";
+export { CodeEditor, type CodeEditorProps } from "./code-editor";
 export { DiffLine, type DiffLineProps, diffLineVariants } from "./diff-line";
 export {
   ScoreRing,
@@ -23,3 +24,4 @@ export {
 } from "./status-badge";
 export { TableRow, type TableRowProps, tableRowVariants } from "./table-row";
 export { Toggle, type ToggleProps } from "./toggle";
+export { TopNavbar } from "./top-navbar";
