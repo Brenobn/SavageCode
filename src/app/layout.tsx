@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import { TopNavbar } from "@/components/ui";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -19,7 +20,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={jetbrainsMono.variable}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <TopNavbar.Root>
+          <TopNavbar.Brand>
+            <TopNavbar.Prompt />
+            <TopNavbar.BrandText>devroast</TopNavbar.BrandText>
+          </TopNavbar.Brand>
+
+          <TopNavbar.Right>
+            <TopNavbar.Item>leaderboard</TopNavbar.Item>
+          </TopNavbar.Right>
+        </TopNavbar.Root>
+
+        {children}
+      </body>
     </html>
   );
 }
