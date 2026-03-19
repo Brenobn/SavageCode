@@ -1,0 +1,422 @@
+{
+  "id": "3d6b05f5-5b84-4e62-9be9-00d3512821c0",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.analysis_findings": {
+      "name": "analysis_findings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "roast_result_id": {
+          "name": "roast_result_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tone": {
+          "name": "tone",
+          "type": "analysis_tone",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "analysis_findings_roast_result_id_roast_results_id_fk": {
+          "name": "analysis_findings_roast_result_id_roast_results_id_fk",
+          "tableFrom": "analysis_findings",
+          "tableTo": "roast_results",
+          "columnsFrom": ["roast_result_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "analysis_findings_roast_result_id_position_uk": {
+          "name": "analysis_findings_roast_result_id_position_uk",
+          "nullsNotDistinct": false,
+          "columns": ["roast_result_id", "position"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.roast_results": {
+      "name": "roast_results",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "submission_id": {
+          "name": "submission_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "analysis_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "score": {
+          "name": "score",
+          "type": "numeric(3, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verdict": {
+          "name": "verdict",
+          "type": "roast_verdict",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "roast_quote": {
+          "name": "roast_quote",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "roast_results_score_idx": {
+          "name": "roast_results_score_idx",
+          "columns": [
+            {
+              "expression": "score",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "roast_results_submission_id_submissions_id_fk": {
+          "name": "roast_results_submission_id_submissions_id_fk",
+          "tableFrom": "roast_results",
+          "tableTo": "submissions",
+          "columnsFrom": ["submission_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "roast_results_submissionId_unique": {
+          "name": "roast_results_submissionId_unique",
+          "nullsNotDistinct": false,
+          "columns": ["submission_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "roast_results_score_range_ck": {
+          "name": "roast_results_score_range_ck",
+          "value": "\"roast_results\".\"score\" >= 0 AND \"roast_results\".\"score\" <= 10"
+        },
+        "roast_results_completed_fields_ck": {
+          "name": "roast_results_completed_fields_ck",
+          "value": "\"roast_results\".\"status\" <> 'completed' OR (\"roast_results\".\"score\" IS NOT NULL AND \"roast_results\".\"verdict\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.submissions": {
+      "name": "submissions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "language": {
+          "name": "language",
+          "type": "code_language",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unknown'"
+        },
+        "line_count": {
+          "name": "line_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roast_mode": {
+          "name": "roast_mode",
+          "type": "roast_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'normal'"
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "submission_visibility",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'public'"
+        },
+        "fingerprint": {
+          "name": "fingerprint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.suggested_diff_lines": {
+      "name": "suggested_diff_lines",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "roast_result_id": {
+          "name": "roast_result_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "line_type": {
+          "name": "line_type",
+          "type": "diff_line_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "suggested_diff_lines_roast_result_id_roast_results_id_fk": {
+          "name": "suggested_diff_lines_roast_result_id_roast_results_id_fk",
+          "tableFrom": "suggested_diff_lines",
+          "tableTo": "roast_results",
+          "columnsFrom": ["roast_result_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "suggested_diff_lines_roast_result_id_position_uk": {
+          "name": "suggested_diff_lines_roast_result_id_position_uk",
+          "nullsNotDistinct": false,
+          "columns": ["roast_result_id", "position"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.analysis_status": {
+      "name": "analysis_status",
+      "schema": "public",
+      "values": ["pending", "processing", "completed", "failed"]
+    },
+    "public.analysis_tone": {
+      "name": "analysis_tone",
+      "schema": "public",
+      "values": ["critical", "warning", "good", "muted"]
+    },
+    "public.code_language": {
+      "name": "code_language",
+      "schema": "public",
+      "values": [
+        "javascript",
+        "typescript",
+        "sql",
+        "java",
+        "python",
+        "bash",
+        "go",
+        "rust",
+        "csharp",
+        "cpp",
+        "php",
+        "ruby",
+        "unknown"
+      ]
+    },
+    "public.diff_line_type": {
+      "name": "diff_line_type",
+      "schema": "public",
+      "values": ["context", "removed", "added"]
+    },
+    "public.roast_mode": {
+      "name": "roast_mode",
+      "schema": "public",
+      "values": ["normal", "maximum"]
+    },
+    "public.roast_verdict": {
+      "name": "roast_verdict",
+      "schema": "public",
+      "values": ["needs_serious_help", "needs_work", "decent", "clean"]
+    },
+    "public.submission_visibility": {
+      "name": "submission_visibility",
+      "schema": "public",
+      "values": ["public", "unlisted", "private"]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {
+    "public.leaderboard_entries": {
+      "columns": {},
+      "definition": "select \"submissions\".\"id\" as \"submission_id\", \"roast_results\".\"id\" as \"roast_result_id\", \"roast_results\".\"score\" as \"score\", \"submissions\".\"language\" as \"language\", \"submissions\".\"line_count\" as \"line_count\", substring(\"submissions\".\"code\" from 1 for 120) as \"code_preview\", \"roast_results\".\"created_at\" as \"created_at\" from \"roast_results\" inner join \"submissions\" on \"roast_results\".\"submission_id\" = \"submissions\".\"id\" where (\"roast_results\".\"status\" = 'completed' and \"submissions\".\"visibility\" = 'public')",
+      "name": "leaderboard_entries",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    }
+  },
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
