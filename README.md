@@ -21,7 +21,25 @@ DevRoast e um app web divertido onde voce cola codigo e recebe uma analise em to
 ## Rodando localmente
 ```bash
 pnpm install
+pnpm db:up
+pnpm db:migrate
+pnpm db:seed
 pnpm dev
 ```
 
 Depois, abra `http://localhost:3000`.
+
+## Banco de dados (Drizzle + Postgres)
+
+Comandos uteis:
+
+```bash
+pnpm db:up
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed
+pnpm db:studio
+pnpm db:down
+```
+
+Use `.env.example` como base para criar seu `.env` com `DATABASE_URL`.

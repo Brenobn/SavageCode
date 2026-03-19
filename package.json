@@ -7,11 +7,22 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:down:volumes": "docker compose down -v",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
+    "drizzle-orm": "^0.45.1",
+    "highlight.js": "^11.11.1",
+    "lucide-react": "^0.577.0",
     "next": "16.1.6",
+    "postgres": "^3.4.8",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "shiki": "^4.0.2",
@@ -25,7 +36,10 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.31.10",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
