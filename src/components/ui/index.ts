@@ -8,6 +8,10 @@ export {
 } from "./analysis-card";
 export { Button, type ButtonProps, buttonVariants } from "./button";
 export { CodeEditor, type CodeEditorProps } from "./code-editor";
+export {
+  CodeLanguageSelect,
+  type CodeLanguageSelectProps,
+} from "./code-language-select";
 export { DiffLine, type DiffLineProps, diffLineVariants } from "./diff-line";
 export {
   ScoreRing,
