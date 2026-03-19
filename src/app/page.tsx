@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   CodeEditor,
+  CodeLanguageSelect,
   SectionTitleRoot,
   SectionTitleSlash,
   SectionTitleText,
@@ -18,6 +19,12 @@ import {
   ToggleRoot,
   ToggleThumb,
 } from "@/components/ui";
+import { detectLanguage } from "@/lib/code-language-detect";
+import {
+  getLanguageById,
+  type LanguageMode,
+  type SupportedLanguageId,
+} from "@/lib/code-languages";
 
 const codeSample = [
   "function calculateTotal(items) {",
@@ -59,7 +66,46 @@ const leaderboardRows = [
 
 export default function Home() {
   const [code, setCode] = useState(codeSample);
+  const [languageMode, setLanguageMode] = useState<LanguageMode>("auto");
+  const [manualLanguage, setManualLanguage] =
+    useState<SupportedLanguageId>("javascript");
+  const [detectedLanguage, setDetectedLanguage] =
+    useState<SupportedLanguageId>("javascript");
   const hasCode = useMemo(() => code.trim().length > 0, [code]);
+  const effectiveLanguage =
+    languageMode === "manual" ? manualLanguage : detectedLanguage;
+
+  const languageIndicator =
+    languageMode === "auto"
+      ? `auto: ${getLanguageById(effectiveLanguage)?.label ?? "Plaintext"}`
+      : `manual: ${getLanguageById(effectiveLanguage)?.label ?? "Plaintext"}`;
+
+  useEffect(() => {
+    if (languageMode !== "auto") {
+      return;
+    }
+
+    if (code.trim().length === 0) {
+      setDetectedLanguage("plaintext");
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      const nextLanguage = detectLanguage(code);
+
+      setDetectedLanguage((currentLanguage) => {
+        if (nextLanguage.confidence === "low") {
+          return currentLanguage;
+        }
+
+        return nextLanguage.language;
+      });
+    }, 250);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [code, languageMode]);
 
   return (
     <main className="bg-bg-page text-text-primary">
@@ -77,10 +123,21 @@ export default function Home() {
             </p>
           </div>
 
-          <CodeEditor onValueChange={setCode} value={code} />
+          <CodeEditor
+            language={effectiveLanguage}
+            languageIndicator={languageIndicator}
+            onValueChange={setCode}
+            value={code}
+          />
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <CodeLanguageSelect
+                mode={languageMode}
+                onModeChange={setLanguageMode}
+                onSelectedLanguageChange={setManualLanguage}
+                selectedLanguage={manualLanguage}
+              />
               <ToggleRoot defaultChecked>
                 <ToggleControl>
                   <ToggleThumb />
