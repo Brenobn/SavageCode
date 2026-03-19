@@ -1,6 +1,6 @@
-# DevRoast
+# SavageCode
 
-DevRoast e um app web divertido onde voce cola codigo e recebe uma analise em tom de roast, direta e sem filtro.
+SavageCode e um app web divertido onde voce cola codigo e recebe uma analise em tom de roast, direta e sem filtro.
 
 ## O que o app oferece
 - Homepage com visual terminal para envio de trechos de codigo.
