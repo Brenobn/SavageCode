@@ -19,6 +19,7 @@ export interface CodeEditorProps
   defaultValue?: string;
   language?: SupportedLanguageId;
   languageIndicator?: string;
+  maxCharacterCount?: number;
   onValueChange?: (value: string) => void;
   value?: string;
 }
@@ -28,6 +29,7 @@ export function CodeEditor({
   defaultValue = "",
   language = "plaintext",
   languageIndicator,
+  maxCharacterCount,
   onValueChange,
   value,
   ...props
@@ -42,6 +44,10 @@ export function CodeEditor({
     () => Math.max(16, currentValue.split("\n").length),
     [currentValue],
   );
+  const characterCount = currentValue.length;
+  const hasCharacterLimit = typeof maxCharacterCount === "number";
+  const isOverCharacterLimit =
+    hasCharacterLimit && characterCount > maxCharacterCount;
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const nextValue = event.target.value;
@@ -87,7 +93,7 @@ export function CodeEditor({
 
         <div className="relative min-w-0 flex-1 overflow-hidden">
           <div
-            className={`pointer-events-none absolute inset-0 overflow-auto p-4 ${isHighlightReady ? "opacity-100" : "opacity-0"}`}
+            className={`pointer-events-none absolute inset-0 overflow-auto p-4 ${hasCharacterLimit ? "pb-10" : ""} ${isHighlightReady ? "opacity-100" : "opacity-0"}`}
             ref={highlightScrollRef}
           >
             <CodeEditorHighlight
@@ -98,13 +104,22 @@ export function CodeEditor({
           </div>
 
           <textarea
-            className={`relative z-10 h-full w-full resize-none bg-transparent p-4 font-mono text-xs leading-5 caret-text-primary outline-none placeholder:text-text-tertiary selection:bg-border-primary/60 ${isHighlightReady ? "text-transparent" : "text-text-primary"} ${className ?? ""}`}
+            className={`relative z-10 h-full w-full resize-none bg-transparent p-4 ${hasCharacterLimit ? "pb-10" : ""} font-mono text-xs leading-5 caret-text-primary outline-none placeholder:text-text-tertiary selection:bg-border-primary/60 ${isHighlightReady ? "text-transparent" : "text-text-primary"} ${className ?? ""}`}
             onChange={handleChange}
             onScroll={handleScroll}
             spellCheck={false}
             value={currentValue}
             {...props}
           />
+
+          {hasCharacterLimit ? (
+            <span
+              className={`pointer-events-none absolute right-4 bottom-3 z-20 font-mono text-[11px] ${isOverCharacterLimit ? "text-accent-red" : "text-text-tertiary"}`}
+            >
+              {characterCount.toLocaleString()} /{" "}
+              {maxCharacterCount.toLocaleString()} chars
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

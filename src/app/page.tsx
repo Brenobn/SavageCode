@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   CodeEditor,
-  CodeLanguageSelect,
   SectionTitleRoot,
   SectionTitleSlash,
   SectionTitleText,
@@ -22,9 +21,9 @@ import {
 import { detectLanguage } from "@/lib/code-language-detect";
 import {
   getLanguageById,
-  type LanguageMode,
   type SupportedLanguageId,
 } from "@/lib/code-languages";
+import { leaderboardEntries, leaderboardStats } from "@/lib/leaderboard-static";
 
 const codeSample = [
   "function calculateTotal(items) {",
@@ -40,51 +39,19 @@ const codeSample = [
   "}",
 ].join("\n");
 
-const leaderboardRows = [
-  {
-    rank: "#1",
-    score: "2.1",
-    codePreview: "function calculateTotal(items) { var total = 0; ...",
-    language: "javascript",
-    scoreTone: "critical" as const,
-  },
-  {
-    rank: "#2",
-    score: "2.4",
-    codePreview: "if (isLoggedIn = true) { return dashboard(); }",
-    language: "typescript",
-    scoreTone: "critical" as const,
-  },
-  {
-    rank: "#3",
-    score: "2.8",
-    codePreview: "SELECT * FROM users WHERE email = input",
-    language: "sql",
-    scoreTone: "warning" as const,
-  },
-];
+const CODE_SNIPPET_CHAR_LIMIT = 2000;
 
 export default function Home() {
   const [code, setCode] = useState(codeSample);
-  const [languageMode, setLanguageMode] = useState<LanguageMode>("auto");
-  const [manualLanguage, setManualLanguage] =
-    useState<SupportedLanguageId>("javascript");
-  const [detectedLanguage, setDetectedLanguage] =
-    useState<SupportedLanguageId>("javascript");
+  const [detectedLanguage, setDetectedLanguage] = useState<SupportedLanguageId>(
+    detectLanguage(codeSample).language,
+  );
   const hasCode = useMemo(() => code.trim().length > 0, [code]);
-  const effectiveLanguage =
-    languageMode === "manual" ? manualLanguage : detectedLanguage;
+  const isOverCodeLimit = code.length > CODE_SNIPPET_CHAR_LIMIT;
 
-  const languageIndicator =
-    languageMode === "auto"
-      ? `auto: ${getLanguageById(effectiveLanguage)?.label ?? "Plaintext"}`
-      : `manual: ${getLanguageById(effectiveLanguage)?.label ?? "Plaintext"}`;
+  const languageIndicator = `detected: ${getLanguageById(detectedLanguage)?.label ?? "Plaintext"}`;
 
   useEffect(() => {
-    if (languageMode !== "auto") {
-      return;
-    }
-
     if (code.trim().length === 0) {
       setDetectedLanguage("plaintext");
       return;
@@ -93,19 +60,13 @@ export default function Home() {
     const timeoutId = setTimeout(() => {
       const nextLanguage = detectLanguage(code);
 
-      setDetectedLanguage((currentLanguage) => {
-        if (nextLanguage.confidence === "low") {
-          return currentLanguage;
-        }
-
-        return nextLanguage.language;
-      });
+      setDetectedLanguage(nextLanguage.language);
     }, 250);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [code, languageMode]);
+  }, [code]);
 
   return (
     <main className="bg-bg-page text-text-primary">
@@ -124,20 +85,15 @@ export default function Home() {
           </div>
 
           <CodeEditor
-            language={effectiveLanguage}
+            language={detectedLanguage}
             languageIndicator={languageIndicator}
+            maxCharacterCount={CODE_SNIPPET_CHAR_LIMIT}
             onValueChange={setCode}
             value={code}
           />
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <CodeLanguageSelect
-                mode={languageMode}
-                onModeChange={setLanguageMode}
-                onSelectedLanguageChange={setManualLanguage}
-                selectedLanguage={manualLanguage}
-              />
               <ToggleRoot defaultChecked>
                 <ToggleControl>
                   <ToggleThumb />
@@ -145,19 +101,23 @@ export default function Home() {
                 <ToggleLabel>roast mode</ToggleLabel>
               </ToggleRoot>
               <span className="font-sans text-xs text-text-tertiary">
-                {"// maximum sarcasm enabled"}
+                {isOverCodeLimit
+                  ? `// max ${CODE_SNIPPET_CHAR_LIMIT.toLocaleString()} chars exceeded`
+                  : "// maximum sarcasm enabled"}
               </span>
             </div>
 
-            <Button disabled={!hasCode} variant="primary">
+            <Button disabled={!hasCode || isOverCodeLimit} variant="primary">
               $ roast_my_code
             </Button>
           </div>
 
           <div className="flex items-center justify-center gap-6 pb-14 font-sans text-xs text-text-tertiary">
-            <span>2,847 codes roasted</span>
+            <span>
+              {leaderboardStats.totalRoasts.toLocaleString()} codes roasted
+            </span>
             <span className="font-mono">.</span>
-            <span>avg score: 4.2/10</span>
+            <span>avg score: {leaderboardStats.averageScore}</span>
           </div>
         </section>
 
@@ -167,7 +127,12 @@ export default function Home() {
               <SectionTitleSlash />
               <SectionTitleText>shame_leaderboard</SectionTitleText>
             </SectionTitleRoot>
-            <Button variant="link">$ view_all &gt;&gt;</Button>
+            <Link
+              className="font-mono text-xs text-text-secondary underline-offset-4 hover:underline"
+              href="/leaderboard"
+            >
+              $ view_all &gt;&gt;
+            </Link>
           </div>
 
           <p className="font-sans text-[13px] text-text-tertiary">
@@ -182,7 +147,7 @@ export default function Home() {
               <div className="w-25">lang</div>
             </div>
 
-            {leaderboardRows.map((row) => (
+            {leaderboardEntries.slice(0, 3).map((row) => (
               <TableRowRoot key={row.rank} scoreTone={row.scoreTone}>
                 <TableRowRank>{row.rank}</TableRowRank>
 
@@ -202,10 +167,12 @@ export default function Home() {
           </div>
 
           <div className="flex justify-center gap-1 py-4 font-sans text-xs text-text-tertiary">
-            <span>showing top 3 of 2,847 -</span>
+            <span>
+              showing top 3 of {leaderboardStats.totalRoasts.toLocaleString()} -
+            </span>
             <Link
               className="text-text-secondary underline-offset-4 hover:underline"
-              href="#"
+              href="/leaderboard"
             >
               view full leaderboard &gt;&gt;
             </Link>

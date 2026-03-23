@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import Link from "next/link";
 import { TopNavbar } from "@/components/ui";
 import "./globals.css";
 
@@ -24,11 +25,15 @@ export default function RootLayout({
         <TopNavbar.Root>
           <TopNavbar.Brand>
             <TopNavbar.Prompt />
-            <TopNavbar.BrandText>devroast</TopNavbar.BrandText>
+            <TopNavbar.BrandText>
+              <Link href="/">devroast</Link>
+            </TopNavbar.BrandText>
           </TopNavbar.Brand>
 
           <TopNavbar.Right>
-            <TopNavbar.Item>leaderboard</TopNavbar.Item>
+            <TopNavbar.Item>
+              <Link href="/leaderboard">leaderboard</Link>
+            </TopNavbar.Item>
           </TopNavbar.Right>
         </TopNavbar.Root>
 
