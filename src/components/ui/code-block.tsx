@@ -1,42 +1,58 @@
 import "server-only";
 
+import type { HTMLAttributes } from "react";
 import { type BundledLanguage, codeToHtml } from "shiki";
 
 export interface CodeBlockProps {
+  className?: string;
   code: string;
-  fileName?: string;
-  lang: BundledLanguage;
+  lang: string;
   showLineNumbers?: boolean;
 }
 
-export async function CodeBlock({
-  code,
+export interface CodeBlockHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  fileName?: string;
+}
+
+export function CodeBlockHeader({
+  className,
   fileName,
+  ...props
+}: CodeBlockHeaderProps) {
+  return (
+    <div
+      className={`flex h-10 items-center gap-3 border-b border-border-primary px-4 ${className ?? ""}`}
+      {...props}
+    >
+      <span className="size-2.5 rounded-full bg-accent-red" />
+      <span className="size-2.5 rounded-full bg-accent-amber" />
+      <span className="size-2.5 rounded-full bg-accent-green" />
+      <div className="flex-1" />
+      {fileName ? (
+        <span className="font-mono text-xs text-text-tertiary">{fileName}</span>
+      ) : null}
+    </div>
+  );
+}
+
+export async function CodeBlock({
+  className,
+  code,
   lang,
   showLineNumbers = true,
 }: CodeBlockProps) {
   const html = await codeToHtml(code, {
-    lang,
+    lang: lang as BundledLanguage,
     theme: "vesper",
   });
 
   const lineNumbers = code.split("\n").map((_, index) => index + 1);
 
   return (
-    <div className="w-full overflow-hidden border border-border-primary bg-bg-input">
-      <div className="flex h-10 items-center gap-3 border-b border-border-primary px-4">
-        <span className="size-2.5 rounded-full bg-accent-red" />
-        <span className="size-2.5 rounded-full bg-accent-amber" />
-        <span className="size-2.5 rounded-full bg-accent-green" />
-        <div className="flex-1" />
-        {fileName ? (
-          <span className="font-mono text-xs text-text-tertiary">
-            {fileName}
-          </span>
-        ) : null}
-      </div>
-
-      <div className="flex">
+    <div
+      className={`w-full overflow-hidden border border-border-primary bg-bg-input ${className ?? ""}`}
+    >
+      <div className="flex h-full min-h-0">
         {showLineNumbers ? (
           <div className="flex shrink-0 flex-col items-end gap-1 border-r border-border-primary bg-bg-surface px-2.5 py-3 font-mono text-[13px] text-text-tertiary">
             {lineNumbers.map((lineNumber) => (

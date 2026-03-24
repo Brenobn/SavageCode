@@ -22,7 +22,7 @@ import {
   ToggleRoot,
   ToggleThumb,
 } from "@/components/ui";
-import { CodeBlock } from "@/components/ui/code-block";
+import { CodeBlock, CodeBlockHeader } from "@/components/ui/code-block";
 
 const buttonVariants = ["primary", "secondary", "link", "danger"] as const;
 const buttonSizes = ["sm", "md", "lg", "icon"] as const;
@@ -150,11 +150,14 @@ export default function ComponentsPage() {
             <SectionTitleSlash />
             <SectionTitleText>code_block</SectionTitleText>
           </SectionTitleRoot>
-          <CodeBlock
-            code={codeSample}
-            fileName="calculate.js"
-            lang="javascript"
-          />
+          <div className="overflow-hidden border border-border-primary bg-bg-input">
+            <CodeBlockHeader fileName="calculate.js" />
+            <CodeBlock
+              className="border-0"
+              code={codeSample}
+              lang="javascript"
+            />
+          </div>
         </section>
 
         <section className="space-y-4 rounded-xl border border-border-primary bg-bg-surface p-6">

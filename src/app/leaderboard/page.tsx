@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  type LeaderboardTokenTone,
-  leaderboardEntries,
-  leaderboardStats,
-} from "@/lib/leaderboard-static";
+import { CodeBlock } from "@/components/ui/code-block";
+import { leaderboardEntries, leaderboardStats } from "@/lib/leaderboard-static";
 
 export const metadata: Metadata = {
   title: "Leaderboard | DevRoast",
@@ -13,15 +10,35 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const tokenToneClasses: Record<LeaderboardTokenTone, string> = {
-  keyword: "text-accent-amber",
-  function: "text-accent-blue",
-  operator: "text-text-secondary",
-  string: "text-accent-cyan",
-  variable: "text-accent-red",
-  number: "text-accent-orange",
-  comment: "text-text-tertiary",
-};
+function toShikiLanguage(language: string): string {
+  switch (language) {
+    case "javascript":
+    case "typescript":
+    case "sql":
+    case "java":
+    case "python":
+    case "go":
+    case "php":
+    case "ruby":
+    case "rust":
+    case "yaml":
+    case "markdown":
+    case "dockerfile":
+    case "bash":
+    case "css":
+    case "html":
+    case "json":
+      return language;
+    default:
+      return "plaintext";
+  }
+}
+
+function toCodeSnippet(entry: (typeof leaderboardEntries)[number]): string {
+  return entry.codeLines
+    .map((line) => line.tokens.map((token) => token.content).join(""))
+    .join("\n");
+}
 
 export default function LeaderboardPage() {
   const featuredEntries = leaderboardEntries.slice(0, 5);
@@ -83,30 +100,11 @@ export default function LeaderboardPage() {
                 </div>
               </header>
 
-              <div className="flex h-[120px] overflow-hidden border-border-primary bg-bg-input">
-                <div className="flex w-10 flex-col items-end gap-1.5 border-r border-border-primary bg-bg-surface px-2.5 py-3.5 font-mono text-xs text-text-tertiary">
-                  {entry.codeLines.map((_, lineIndex) => (
-                    <span key={`${entry.rank}-line-${lineIndex + 1}`}>
-                      {lineIndex + 1}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex flex-1 flex-col gap-1.5 px-4 py-3.5 font-mono text-xs">
-                  {entry.codeLines.map((line, lineIndex) => (
-                    <p key={`${entry.rank}-content-${lineIndex + 1}`}>
-                      {line.tokens.map((token, tokenIndex) => (
-                        <span
-                          className={tokenToneClasses[token.tone]}
-                          key={`${entry.rank}-token-${lineIndex + 1}-${tokenIndex + 1}`}
-                        >
-                          {token.content}
-                        </span>
-                      ))}
-                    </p>
-                  ))}
-                </div>
-              </div>
+              <CodeBlock
+                className="h-30 border-0"
+                code={toCodeSnippet(entry)}
+                lang={toShikiLanguage(entry.language)}
+              />
             </article>
           ))}
         </section>
