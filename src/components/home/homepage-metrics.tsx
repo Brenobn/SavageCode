@@ -28,19 +28,21 @@ export function HomepageMetrics() {
   }, [data]);
 
   return (
-    <div className="flex items-center justify-center gap-6 pb-14 font-sans text-xs text-text-tertiary">
+    <div className="flex items-center justify-center gap-6 font-mono text-xs text-text-tertiary">
       <span>
         <NumberFlow
           format={{ useGrouping: true }}
+          locales="en-US"
           value={animatedTotalRoasts}
         />{" "}
         codes roasted
       </span>
-      <span className="font-mono">.</span>
+      <span>&middot;</span>
       <span>
         avg score:{" "}
         <NumberFlow
           format={{ maximumFractionDigits: 1, minimumFractionDigits: 1 }}
+          locales="en-US"
           value={animatedAverageScore}
         />
         /10

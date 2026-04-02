@@ -69,13 +69,13 @@ export function HomePageClient({
   return (
     <main className="bg-bg-page text-text-primary">
       <div className="mx-auto w-full max-w-6xl px-10 pt-20 pb-0">
-        <section className="mx-auto flex w-full max-w-4xl flex-col gap-8">
+        <section className="mx-auto flex w-full max-w-[780px] flex-col gap-8">
           <div className="flex flex-col gap-3">
             <h1 className="flex items-center gap-3 font-mono text-4xl font-bold">
               <span className="text-accent-green">$</span>
               <span>paste your code. get roasted.</span>
             </h1>
-            <p className="font-sans text-sm text-text-secondary">
+            <p className="font-mono text-sm text-text-secondary">
               {
                 "// drop your code below and we'll rate it - brutally honest or full roast mode"
               }
@@ -90,7 +90,7 @@ export function HomePageClient({
             value={code}
           />
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <ToggleRoot defaultChecked>
                 <ToggleControl>
@@ -98,7 +98,7 @@ export function HomePageClient({
                 </ToggleControl>
                 <ToggleLabel>roast mode</ToggleLabel>
               </ToggleRoot>
-              <span className="font-sans text-xs text-text-tertiary">
+              <span className="font-mono text-xs text-text-tertiary">
                 {isOverCodeLimit
                   ? `// max ${CODE_SNIPPET_CHAR_LIMIT.toLocaleString()} chars exceeded`
                   : "// maximum sarcasm enabled"}
