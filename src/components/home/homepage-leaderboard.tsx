@@ -59,37 +59,34 @@ export async function HomepageLeaderboard() {
         {"// the worst code on the internet, ranked by shame"}
       </p>
 
-      <div className="border border-border-primary">
-        <div className="flex h-10 items-center border-b border-border-primary bg-bg-surface px-5 font-mono text-xs text-text-tertiary">
-          <div className="w-12.5">rank</div>
-          <div className="w-17.5">score</div>
-          <div className="flex-1">code</div>
-          <div className="w-25">lang</div>
-        </div>
-
+      <div className="flex flex-col gap-5">
         {entries.map((row) => (
-          <HomepageLeaderboardRow
-            collapsedCodeBlock={
-              <CodeBlock
-                className="border-0"
-                code={row.code.split("\n").slice(0, 3).join("\n")}
-                lang={toShikiLanguage(row.language)}
-              />
-            }
-            codePreview={row.codePreview}
-            expandedCodeBlock={
-              <CodeBlock
-                className="border-0"
-                code={row.code}
-                lang={toShikiLanguage(row.language)}
-              />
-            }
-            key={row.rank}
-            language={row.language}
-            rank={row.rank}
-            score={row.score}
-            scoreTone={row.scoreTone}
-          />
+          <article className="border border-border-primary" key={row.rank}>
+            <HomepageLeaderboardRow
+              collapsedCodeBlock={
+                <CodeBlock
+                  className="border-0"
+                  code={row.code.split("\n").slice(0, 3).join("\n")}
+                  lang={toShikiLanguage(row.language)}
+                  wrapLongLines
+                />
+              }
+              codePreview={row.codePreview}
+              expandedCodeBlock={
+                <CodeBlock
+                  className="border-0"
+                  code={row.code}
+                  lang={toShikiLanguage(row.language)}
+                  wrapLongLines
+                />
+              }
+              hasMoreLines={row.code.split("\n").length > 3}
+              language={row.language}
+              rank={row.rank}
+              score={row.score}
+              scoreTone={row.scoreTone}
+            />
+          </article>
         ))}
       </div>
 

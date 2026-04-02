@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HomepageLeaderboardRow } from "@/components/home/homepage-leaderboard-row";
+import { ExpandableCodeBlock } from "@/components/home/expandable-code-block";
 import { CodeBlock } from "@/components/ui/code-block";
 import { getQueryClient, trpc } from "@/trpc/server";
 
@@ -17,7 +17,6 @@ type LeaderboardEntry = {
   scoreTone: "critical" | "warning" | "good" | "muted";
   language: string;
   lineCount: number;
-  codePreview: string;
   code: string;
 };
 
@@ -65,6 +64,23 @@ function getCollapsedCode(code: string): string {
   return code.split("\n").slice(0, 3).join("\n");
 }
 
+function getScoreToneClass(scoreTone: LeaderboardEntry["scoreTone"]): string {
+  switch (scoreTone) {
+    case "critical":
+      return "text-accent-red";
+    case "warning":
+      return "text-accent-amber";
+    case "good":
+      return "text-accent-green";
+    default:
+      return "text-text-secondary";
+  }
+}
+
+function getLineCountLabel(lineCount: number): string {
+  return lineCount === 1 ? "1 line" : `${lineCount} lines`;
+}
+
 export default async function LeaderboardPage() {
   const queryClient = getQueryClient();
   const data = await queryClient.fetchQuery(
@@ -94,55 +110,63 @@ export default async function LeaderboardPage() {
               {data.stats.totalSubmissions.toLocaleString()} submissions
             </span>
             <span>&middot;</span>
-            <span>avg score: {data.stats.averageScore.toFixed(1)}</span>
+            <span>avg score: {data.stats.averageScore.toFixed(1)}/10</span>
           </div>
         </section>
 
-        <section className="flex w-full flex-col">
-          <div className="border border-border-primary">
-            <div className="flex h-10 items-center border-b border-border-primary bg-bg-surface px-5 font-mono text-xs text-text-tertiary">
-              <div className="w-12.5">rank</div>
-              <div className="w-17.5">score</div>
-              <div className="flex-1">code</div>
-              <div className="w-25">lang</div>
-            </div>
+        <section className="flex w-full flex-col gap-5">
+          {entries.length > 0 ? (
+            entries.map((entry: LeaderboardEntry) => {
+              const language = toShikiLanguage(entry.language);
+              const hasMoreLines = entry.code.split("\n").length > 3;
 
-            {entries.length > 0 ? (
-              entries.map((entry: LeaderboardEntry) => {
-                const language = toShikiLanguage(entry.language);
+              return (
+                <article
+                  className="border border-border-primary"
+                  key={entry.rank}
+                >
+                  <div className="flex h-10 items-center justify-between border-b border-border-primary bg-bg-surface px-4 font-mono text-xs">
+                    <div className="flex items-center gap-2 text-text-tertiary">
+                      <span>#{entry.rank}</span>
+                      <span>score:</span>
+                      <span className={getScoreToneClass(entry.scoreTone)}>
+                        {entry.score.toFixed(1)}
+                      </span>
+                    </div>
 
-                return (
-                  <HomepageLeaderboardRow
-                    collapsedCodeBlock={
+                    <div className="text-text-tertiary">
+                      {entry.language} {getLineCountLabel(entry.lineCount)}
+                    </div>
+                  </div>
+
+                  <ExpandableCodeBlock
+                    collapsedContent={
                       <CodeBlock
-                        className="h-30 border-0"
+                        className="border-0"
                         code={getCollapsedCode(entry.code)}
                         lang={language}
+                        wrapLongLines
                       />
                     }
-                    codePreview={entry.codePreview}
-                    expandedCodeBlock={
+                    expandedContent={
                       <CodeBlock
-                        className="max-h-[480px] border-0"
+                        className="border-0"
                         code={entry.code}
                         lang={language}
+                        wrapLongLines
                       />
                     }
-                    key={entry.rank}
-                    language={entry.language}
-                    rank={entry.rank}
-                    score={entry.score}
-                    scoreTone={entry.scoreTone}
+                    hasMoreLines={hasMoreLines}
                   />
-                );
-              })
-            ) : (
-              <div className="px-5 py-6 font-mono text-xs text-text-tertiary">
-                no public completed submissions yet - submit code to start the
-                leaderboard.
-              </div>
-            )}
-          </div>
+                </article>
+              );
+            })
+          ) : (
+            <div className="border border-border-primary px-5 py-6 font-mono text-xs text-text-tertiary">
+              no public completed submissions yet - submit code to start the
+              leaderboard.
+            </div>
+          )}
         </section>
 
         <div className="flex items-center justify-between font-mono text-xs text-text-tertiary">
