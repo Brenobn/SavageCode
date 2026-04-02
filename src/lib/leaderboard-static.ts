@@ -294,6 +294,219 @@ export const leaderboardEntries: LeaderboardEntry[] = [
       },
     ],
   },
+  {
+    rank: "#11",
+    score: "4.5",
+    codePreview: "if (user) setAdmin(true);",
+    language: "typescript",
+    lineCount: 33,
+    submittedAt: "2026-03-17",
+    scoreTone: "muted",
+    codeLines: [
+      {
+        tokens: [
+          { content: "if", tone: "keyword" },
+          { content: " (", tone: "operator" },
+          { content: "user", tone: "variable" },
+          { content: ") ", tone: "operator" },
+          { content: "setAdmin", tone: "function" },
+          { content: "(", tone: "operator" },
+          { content: "true", tone: "keyword" },
+          { content: ");", tone: "operator" },
+        ],
+      },
+    ],
+  },
+  {
+    rank: "#12",
+    score: "4.7",
+    codePreview: "SELECT password FROM users;",
+    language: "sql",
+    lineCount: 4,
+    submittedAt: "2026-03-16",
+    scoreTone: "muted",
+    codeLines: [
+      {
+        tokens: [
+          { content: "SELECT", tone: "keyword" },
+          { content: " password ", tone: "variable" },
+          { content: "FROM", tone: "keyword" },
+          { content: " users", tone: "variable" },
+          { content: ";", tone: "operator" },
+        ],
+      },
+    ],
+  },
+  {
+    rank: "#13",
+    score: "4.8",
+    codePreview: "console.log(process.env)",
+    language: "javascript",
+    lineCount: 1,
+    submittedAt: "2026-03-16",
+    scoreTone: "muted",
+    codeLines: [
+      {
+        tokens: [
+          { content: "console", tone: "variable" },
+          { content: ".log", tone: "function" },
+          { content: "(", tone: "operator" },
+          { content: "process", tone: "variable" },
+          { content: ".env", tone: "variable" },
+          { content: ")", tone: "operator" },
+        ],
+      },
+    ],
+  },
+  {
+    rank: "#14",
+    score: "5.0",
+    codePreview: "arr.sort(() => Math.random() - 0.5)",
+    language: "javascript",
+    lineCount: 7,
+    submittedAt: "2026-03-15",
+    scoreTone: "good",
+    codeLines: [
+      {
+        tokens: [
+          { content: "arr", tone: "variable" },
+          { content: ".sort", tone: "function" },
+          { content: "(() => ", tone: "operator" },
+          { content: "Math", tone: "variable" },
+          { content: ".random", tone: "function" },
+          { content: "() - ", tone: "operator" },
+          { content: "0.5", tone: "number" },
+          { content: ")", tone: "operator" },
+        ],
+      },
+    ],
+  },
+  {
+    rank: "#15",
+    score: "5.2",
+    codePreview: "while(true){ queue.push(job()) }",
+    language: "python",
+    lineCount: 12,
+    submittedAt: "2026-03-15",
+    scoreTone: "good",
+    codeLines: [
+      {
+        tokens: [
+          { content: "while", tone: "keyword" },
+          { content: " true", tone: "keyword" },
+          { content: ":", tone: "operator" },
+        ],
+      },
+      {
+        tokens: [{ content: "    queue.append(run_job())", tone: "function" }],
+      },
+    ],
+  },
+  {
+    rank: "#16",
+    score: "5.3",
+    codePreview: "const retries = Infinity",
+    language: "typescript",
+    lineCount: 16,
+    submittedAt: "2026-03-14",
+    scoreTone: "good",
+    codeLines: [
+      {
+        tokens: [
+          { content: "const", tone: "keyword" },
+          { content: " retries", tone: "variable" },
+          { content: " = ", tone: "operator" },
+          { content: "Infinity", tone: "number" },
+        ],
+      },
+      {
+        tokens: [{ content: "retry(request, retries)", tone: "function" }],
+      },
+    ],
+  },
+  {
+    rank: "#17",
+    score: "5.4",
+    codePreview: 'fmt.Println("debug", user.Password)',
+    language: "go",
+    lineCount: 2,
+    submittedAt: "2026-03-14",
+    scoreTone: "good",
+    codeLines: [
+      {
+        tokens: [
+          { content: "fmt", tone: "variable" },
+          { content: ".Println", tone: "function" },
+          { content: "(", tone: "operator" },
+          { content: '"debug"', tone: "string" },
+          { content: ", user.Password", tone: "variable" },
+          { content: ")", tone: "operator" },
+        ],
+      },
+    ],
+  },
+  {
+    rank: "#18",
+    score: "5.7",
+    codePreview: "chmod 777 -R /var/www",
+    language: "bash",
+    lineCount: 1,
+    submittedAt: "2026-03-13",
+    scoreTone: "good",
+    codeLines: [
+      {
+        tokens: [
+          { content: "chmod", tone: "function" },
+          { content: " 777", tone: "number" },
+          { content: " -R /var/www", tone: "operator" },
+        ],
+      },
+    ],
+  },
+  {
+    rank: "#19",
+    score: "5.8",
+    codePreview: 'const token = "hardcoded-prod-token"',
+    language: "javascript",
+    lineCount: 1,
+    submittedAt: "2026-03-13",
+    scoreTone: "good",
+    codeLines: [
+      {
+        tokens: [
+          { content: "const", tone: "keyword" },
+          { content: " token", tone: "variable" },
+          { content: " = ", tone: "operator" },
+          { content: '"hardcoded-prod-token"', tone: "string" },
+        ],
+      },
+    ],
+  },
+  {
+    rank: "#20",
+    score: "5.9",
+    codePreview: "return users[0] // first user is admin",
+    language: "ruby",
+    lineCount: 3,
+    submittedAt: "2026-03-12",
+    scoreTone: "good",
+    codeLines: [
+      {
+        tokens: [
+          { content: "def", tone: "keyword" },
+          { content: " current_admin", tone: "function" },
+        ],
+      },
+      {
+        tokens: [
+          { content: "  users[0] # first user is admin", tone: "comment" },
+        ],
+      },
+      {
+        tokens: [{ content: "end", tone: "keyword" }],
+      },
+    ],
+  },
 ];
 
 export const leaderboardStats = {

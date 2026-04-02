@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Leaderboard estatico dos codigos mais roastados no DevRoast.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 function toShikiLanguage(language: string): string {
   switch (language) {
@@ -41,7 +41,7 @@ function toCodeSnippet(entry: (typeof leaderboardEntries)[number]): string {
 }
 
 export default function LeaderboardPage() {
-  const featuredEntries = leaderboardEntries.slice(0, 5);
+  const featuredEntries = leaderboardEntries.slice(0, 20);
 
   return (
     <main className="bg-bg-page text-text-primary">
