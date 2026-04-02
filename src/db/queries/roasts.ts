@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { analysisFindings } from "@/db/schema/analysis-findings";
 import { leaderboardEntries } from "@/db/schema/leaderboard-entries";
@@ -231,4 +231,25 @@ export async function listLeaderboard(limit = 20, offset = 0) {
     .orderBy(asc(leaderboardEntries.score), asc(leaderboardEntries.createdAt))
     .limit(limit)
     .offset(offset);
+}
+
+export async function listHomepageLeaderboardTop(limit = 3) {
+  return db
+    .select({
+      code: submissions.code,
+      createdAt: roastResults.createdAt,
+      language: submissions.language,
+      score: roastResults.score,
+      submissionId: submissions.id,
+    })
+    .from(roastResults)
+    .innerJoin(submissions, eq(roastResults.submissionId, submissions.id))
+    .where(
+      and(
+        eq(roastResults.status, "completed"),
+        eq(submissions.visibility, "public"),
+      ),
+    )
+    .orderBy(asc(roastResults.score), asc(roastResults.createdAt))
+    .limit(limit);
 }
