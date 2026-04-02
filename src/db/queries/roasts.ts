@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { analysisFindings } from "@/db/schema/analysis-findings";
 import { leaderboardEntries } from "@/db/schema/leaderboard-entries";
@@ -224,23 +224,26 @@ export async function listLeaderboard(limit = 20, offset = 0) {
       score: leaderboardEntries.score,
       language: leaderboardEntries.language,
       lineCount: leaderboardEntries.lineCount,
+      code: submissions.code,
       codePreview: leaderboardEntries.codePreview,
       createdAt: leaderboardEntries.createdAt,
     })
     .from(leaderboardEntries)
+    .innerJoin(submissions, eq(leaderboardEntries.submissionId, submissions.id))
     .orderBy(asc(leaderboardEntries.score), asc(leaderboardEntries.createdAt))
     .limit(limit)
     .offset(offset);
 }
 
-export async function listHomepageLeaderboardTop(limit = 3) {
-  return db
+export async function listHomepageLeaderboardTop() {
+  return listLeaderboard(3, 0);
+}
+
+export async function getLeaderboardStats() {
+  const [stats] = await db
     .select({
-      code: submissions.code,
-      createdAt: roastResults.createdAt,
-      language: submissions.language,
-      score: roastResults.score,
-      submissionId: submissions.id,
+      totalSubmissions: sql<number>`count(*)::int`,
+      averageScore: sql<number>`coalesce(round(avg(${roastResults.score})::numeric, 1), 0)::float8`,
     })
     .from(roastResults)
     .innerJoin(submissions, eq(roastResults.submissionId, submissions.id))
@@ -249,7 +252,10 @@ export async function listHomepageLeaderboardTop(limit = 3) {
         eq(roastResults.status, "completed"),
         eq(submissions.visibility, "public"),
       ),
-    )
-    .orderBy(asc(roastResults.score), asc(roastResults.createdAt))
-    .limit(limit);
+    );
+
+  return {
+    totalSubmissions: stats?.totalSubmissions ?? 0,
+    averageScore: stats?.averageScore ?? 0,
+  };
 }

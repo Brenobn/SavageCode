@@ -14,6 +14,13 @@ interface SeedSubmission {
   visibility: (typeof submissions.$inferInsert)["visibility"];
 }
 
+interface SeedCompletedResult {
+  key: string;
+  score: string;
+  verdict: (typeof roastResults.$inferInsert)["verdict"];
+  roastQuote: string;
+}
+
 function requiredValue<T>(value: T | undefined, label: string): T {
   if (value === undefined) {
     throw new Error(`Missing required seed value: ${label}`);
@@ -62,6 +69,249 @@ const seedSubmissions: SeedSubmission[] = [
     roastMode: "normal",
     visibility: "public",
   },
+  {
+    key: "rank-4",
+    code: 'const users = await db.query("SELECT * FROM users");\nreturn users[0];',
+    language: "typescript",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-5",
+    code: "password = request.body.password\nprint(password)",
+    language: "python",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-6",
+    code: "let retries = 0;\nwhile (true) {\n  tryWork();\n  retries++;\n}",
+    language: "javascript",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-7",
+    code: "if err != nil {\n  // ignore\n}\nreturn nil",
+    language: "go",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-8",
+    code: `SELECT * FROM orders WHERE id = '\${id}';`,
+    language: "sql",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-9",
+    code: "const cache = {};\nitems.map((item) => (cache[item.id] = item));\nreturn cache;",
+    language: "javascript",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-10",
+    code: "try {\n  risky();\n} catch (e) {}",
+    language: "java",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-11",
+    code: 'const query = "DELETE FROM logs";\nawait prisma.$executeRawUnsafe(query);',
+    language: "typescript",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-12",
+    code: 'for user in users:\n    send_email("admin@corp.com", user.password)',
+    language: "python",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-13",
+    code: 'curl -X POST $URL -d "token=$TOKEN"',
+    language: "bash",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-14",
+    code: "const now = new Date();\nsetInterval(() => save(now), 1000);",
+    language: "javascript",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-15",
+    code: "<input value={value} onChange={() => {}} />",
+    language: "typescript",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-16",
+    code: 'def is_admin(user):\n    return user.role == "admin" or True',
+    language: "python",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-17",
+    code: "UPDATE users SET role = 'admin';",
+    language: "sql",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+  {
+    key: "rank-18",
+    code: "const data = await fetch(url);\nJSON.parse(await data.text());\nJSON.parse(await data.text());",
+    language: "javascript",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-19",
+    code: "if (enabled) {\n  return true;\n}\nreturn true;",
+    language: "go",
+    roastMode: "normal",
+    visibility: "public",
+  },
+  {
+    key: "rank-20",
+    code: "const secret = process.env.JWT_SECRET;\nconsole.log(secret);",
+    language: "typescript",
+    roastMode: "maximum",
+    visibility: "public",
+  },
+];
+
+const completedResults: SeedCompletedResult[] = [
+  {
+    key: "rank-1",
+    score: "2.1",
+    verdict: "needs_serious_help",
+    roastQuote: "This loop has more trust issues than your test suite.",
+  },
+  {
+    key: "rank-2",
+    score: "2.4",
+    verdict: "needs_work",
+    roastQuote: "Assignment inside an if? Bold strategy.",
+  },
+  {
+    key: "rank-3",
+    score: "2.8",
+    verdict: "needs_work",
+    roastQuote: "SELECT * plus raw input is a speedrun to regret.",
+  },
+  {
+    key: "rank-4",
+    score: "3.1",
+    verdict: "needs_work",
+    roastQuote: "Taking the first row forever is confidence, not correctness.",
+  },
+  {
+    key: "rank-5",
+    score: "3.3",
+    verdict: "needs_work",
+    roastQuote: "Logs are not a password manager.",
+  },
+  {
+    key: "rank-6",
+    score: "3.5",
+    verdict: "needs_work",
+    roastQuote: "Infinite loops are still loops.",
+  },
+  {
+    key: "rank-7",
+    score: "3.7",
+    verdict: "needs_work",
+    roastQuote: "Ignoring errors does not make them optional.",
+  },
+  {
+    key: "rank-8",
+    score: "3.9",
+    verdict: "needs_work",
+    roastQuote: "String-built SQL still bites.",
+  },
+  {
+    key: "rank-9",
+    score: "4.1",
+    verdict: "needs_work",
+    roastQuote: "Side effects in map are a classic code smell.",
+  },
+  {
+    key: "rank-10",
+    score: "4.2",
+    verdict: "decent",
+    roastQuote: "Silent catches produce loud outages.",
+  },
+  {
+    key: "rank-11",
+    score: "4.4",
+    verdict: "decent",
+    roastQuote: "Unsafe raw query, what could possibly go wrong?",
+  },
+  {
+    key: "rank-12",
+    score: "4.6",
+    verdict: "decent",
+    roastQuote: "Broadcasting passwords is not collaboration.",
+  },
+  {
+    key: "rank-13",
+    score: "4.8",
+    verdict: "decent",
+    roastQuote: "Shell one-liners can still leak secrets.",
+  },
+  {
+    key: "rank-14",
+    score: "5.0",
+    verdict: "decent",
+    roastQuote: "Captured timestamp means timeless bugs.",
+  },
+  {
+    key: "rank-15",
+    score: "5.2",
+    verdict: "decent",
+    roastQuote: "Read-only inputs are interactive cosplay.",
+  },
+  {
+    key: "rank-16",
+    score: "5.4",
+    verdict: "decent",
+    roastQuote: "or True is the admin shortcut no one asked for.",
+  },
+  {
+    key: "rank-17",
+    score: "5.6",
+    verdict: "clean",
+    roastQuote: "Mass role updates are thrilling in production.",
+  },
+  {
+    key: "rank-18",
+    score: "5.8",
+    verdict: "clean",
+    roastQuote:
+      "Parsing the same payload twice is efficient at wasting cycles.",
+  },
+  {
+    key: "rank-19",
+    score: "6.0",
+    verdict: "clean",
+    roastQuote: "At least your branch coverage is honest.",
+  },
+  {
+    key: "rank-20",
+    score: "6.2",
+    verdict: "clean",
+    roastQuote: "Printing secrets is observability with consequences.",
+  },
 ];
 
 async function runSeed() {
@@ -93,42 +343,18 @@ async function runSeed() {
     const insertedResults = await tx
       .insert(roastResults)
       .values([
-        {
+        ...completedResults.map((result) => ({
           submissionId: requiredValue(
-            submissionIdByKey.get("rank-1"),
-            "submission rank-1",
+            submissionIdByKey.get(result.key),
+            `submission ${result.key}`,
           ),
-          status: "completed",
-          score: "2.1",
-          verdict: "needs_serious_help",
-          roastQuote: "This loop has more trust issues than your test suite.",
+          status: "completed" as const,
+          score: result.score,
+          verdict: result.verdict,
+          roastQuote: result.roastQuote,
           model: "gpt-5.3",
           completedAt: new Date(),
-        },
-        {
-          submissionId: requiredValue(
-            submissionIdByKey.get("rank-2"),
-            "submission rank-2",
-          ),
-          status: "completed",
-          score: "2.4",
-          verdict: "needs_work",
-          roastQuote: "Assignment inside an if? Bold strategy.",
-          model: "gpt-5.3",
-          completedAt: new Date(),
-        },
-        {
-          submissionId: requiredValue(
-            submissionIdByKey.get("rank-3"),
-            "submission rank-3",
-          ),
-          status: "completed",
-          score: "2.8",
-          verdict: "needs_work",
-          roastQuote: "SELECT * plus raw input is a speedrun to regret.",
-          model: "gpt-5.3",
-          completedAt: new Date(),
-        },
+        })),
         {
           submissionId: requiredValue(
             submissionIdByKey.get("hidden"),

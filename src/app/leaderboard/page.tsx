@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { HomepageLeaderboardRow } from "@/components/home/homepage-leaderboard-row";
 import { CodeBlock } from "@/components/ui/code-block";
-import { leaderboardEntries, leaderboardStats } from "@/lib/leaderboard-static";
+import { getQueryClient, trpc } from "@/trpc/server";
 
 export const metadata: Metadata = {
   title: "Leaderboard | DevRoast",
@@ -10,8 +11,34 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
+type LeaderboardEntry = {
+  rank: string;
+  score: number;
+  scoreTone: "critical" | "warning" | "good" | "muted";
+  language: string;
+  lineCount: number;
+  codePreview: string;
+  code: string;
+};
+
+const languageAliases: Record<string, string> = {
+  js: "javascript",
+  ts: "typescript",
+  py: "python",
+  sh: "bash",
+  yml: "yaml",
+  md: "markdown",
+};
+
+function normalizeLanguage(language: string): string {
+  const normalized = language.trim().toLowerCase();
+  return languageAliases[normalized] ?? normalized;
+}
+
 function toShikiLanguage(language: string): string {
-  switch (language) {
+  const normalizedLanguage = normalizeLanguage(language);
+
+  switch (normalizedLanguage) {
     case "javascript":
     case "typescript":
     case "sql":
@@ -28,20 +55,22 @@ function toShikiLanguage(language: string): string {
     case "css":
     case "html":
     case "json":
-      return language;
+      return normalizedLanguage;
     default:
       return "plaintext";
   }
 }
 
-function toCodeSnippet(entry: (typeof leaderboardEntries)[number]): string {
-  return entry.codeLines
-    .map((line) => line.tokens.map((token) => token.content).join(""))
-    .join("\n");
+function getCollapsedCode(code: string): string {
+  return code.split("\n").slice(0, 3).join("\n");
 }
 
-export default function LeaderboardPage() {
-  const featuredEntries = leaderboardEntries.slice(0, 20);
+export default async function LeaderboardPage() {
+  const queryClient = getQueryClient();
+  const data = await queryClient.fetchQuery(
+    trpc.leaderboard.full.queryOptions(),
+  );
+  const entries = data.entries;
 
   return (
     <main className="bg-bg-page text-text-primary">
@@ -62,55 +91,62 @@ export default function LeaderboardPage() {
 
           <div className="flex items-center gap-2 font-mono text-xs text-text-tertiary">
             <span>
-              {leaderboardStats.totalRoasts.toLocaleString()} submissions
+              {data.stats.totalSubmissions.toLocaleString()} submissions
             </span>
             <span>&middot;</span>
-            <span>avg score: {leaderboardStats.averageScore}</span>
+            <span>avg score: {data.stats.averageScore.toFixed(1)}</span>
           </div>
         </section>
 
-        <section className="flex w-full flex-col gap-5">
-          {featuredEntries.map((entry) => (
-            <article
-              key={entry.rank}
-              className="w-full border border-border-primary"
-            >
-              <header className="flex h-12 items-center justify-between border-b border-border-primary px-5">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 font-mono text-[13px] leading-none">
-                    <span className="text-text-tertiary">#</span>
-                    <span className="font-bold text-accent-amber">
-                      {entry.rank.replace("#", "")}
-                    </span>
-                  </div>
+        <section className="flex w-full flex-col">
+          <div className="border border-border-primary">
+            <div className="flex h-10 items-center border-b border-border-primary bg-bg-surface px-5 font-mono text-xs text-text-tertiary">
+              <div className="w-12.5">rank</div>
+              <div className="w-17.5">score</div>
+              <div className="flex-1">code</div>
+              <div className="w-25">lang</div>
+            </div>
 
-                  <div className="flex items-center gap-1.5 font-mono text-xs leading-none">
-                    <span className="text-text-tertiary">score:</span>
-                    <span className="text-[13px] font-bold text-accent-red">
-                      {entry.score}
-                    </span>
-                  </div>
-                </div>
+            {entries.length > 0 ? (
+              entries.map((entry: LeaderboardEntry) => {
+                const language = toShikiLanguage(entry.language);
 
-                <div className="flex items-center gap-3 font-mono text-xs">
-                  <span className="text-text-secondary">{entry.language}</span>
-                  <span className="text-text-tertiary">
-                    {entry.lineCount} lines
-                  </span>
-                </div>
-              </header>
-
-              <CodeBlock
-                className="h-30 border-0"
-                code={toCodeSnippet(entry)}
-                lang={toShikiLanguage(entry.language)}
-              />
-            </article>
-          ))}
+                return (
+                  <HomepageLeaderboardRow
+                    collapsedCodeBlock={
+                      <CodeBlock
+                        className="h-30 border-0"
+                        code={getCollapsedCode(entry.code)}
+                        lang={language}
+                      />
+                    }
+                    codePreview={entry.codePreview}
+                    expandedCodeBlock={
+                      <CodeBlock
+                        className="max-h-[480px] border-0"
+                        code={entry.code}
+                        lang={language}
+                      />
+                    }
+                    key={entry.rank}
+                    language={entry.language}
+                    rank={entry.rank}
+                    score={entry.score}
+                    scoreTone={entry.scoreTone}
+                  />
+                );
+              })
+            ) : (
+              <div className="px-5 py-6 font-mono text-xs text-text-tertiary">
+                no public completed submissions yet - submit code to start the
+                leaderboard.
+              </div>
+            )}
+          </div>
         </section>
 
         <div className="flex items-center justify-between font-mono text-xs text-text-tertiary">
-          <span>showing top {featuredEntries.length}</span>
+          <span>showing top {entries.length}</span>
           <Link
             className="text-text-secondary underline-offset-4 hover:underline"
             href="/"
