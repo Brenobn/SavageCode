@@ -1,11 +1,12 @@
 import { and, eq, sql } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { db } from "@/db/client";
 import { roastResults } from "@/db/schema/roast-results";
 import { submissions } from "@/db/schema/submissions";
 import { createTRPCRouter, publicProcedure } from "@/trpc/init";
 
-export const metricsRouter = createTRPCRouter({
-  homepage: publicProcedure.query(async () => {
+const getHomepageMetricsCached = unstable_cache(
+  async () => {
     const [metrics] = await db
       .select({
         totalRoasts: sql<number>`count(*)::int`,
@@ -24,5 +25,14 @@ export const metricsRouter = createTRPCRouter({
       totalRoasts: metrics?.totalRoasts ?? 0,
       averageScore: metrics?.averageScore ?? 0,
     };
-  }),
+  },
+  ["metrics-homepage"],
+  {
+    revalidate: 3600,
+    tags: ["metrics", "metrics-homepage"],
+  },
+);
+
+export const metricsRouter = createTRPCRouter({
+  homepage: publicProcedure.query(async () => getHomepageMetricsCached()),
 });
