@@ -1,0 +1,141 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: ">"
+        - link "devroast" [ref=e7] [cursor=pointer]:
+          - /url: /
+      - link "leaderboard" [ref=e10] [cursor=pointer]:
+        - /url: /leaderboard
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - heading "$ paste your code. get roasted." [level=1] [ref=e15]:
+            - generic [ref=e16]: $
+            - generic [ref=e17]: paste your code. get roasted.
+          - paragraph [ref=e18]: // drop your code below and we'll rate it - brutally honest or full roast mode
+        - generic [ref=e19]:
+          - generic [ref=e24]: "detected: JSX"
+          - generic [ref=e25]:
+            - generic [ref=e26]:
+              - generic [ref=e27]: "1"
+              - generic [ref=e28]: "2"
+              - generic [ref=e29]: "3"
+              - generic [ref=e30]: "4"
+              - generic [ref=e31]: "5"
+              - generic [ref=e32]: "6"
+              - generic [ref=e33]: "7"
+              - generic [ref=e34]: "8"
+              - generic [ref=e35]: "9"
+              - generic [ref=e36]: "10"
+              - generic [ref=e37]: "11"
+              - generic [ref=e38]: "12"
+              - generic [ref=e39]: "13"
+              - generic [ref=e40]: "14"
+              - generic [ref=e41]: "15"
+              - generic [ref=e42]: "16"
+            - generic [ref=e43]:
+              - generic:
+                - generic:
+                  - generic:
+                    - code:
+                      - generic: "function calculateTotal(items) {"
+                      - generic: const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+                      - generic: let discount = 0;
+                      - generic: "if (subtotal > 100) {"
+                      - generic: discount = subtotal * 0.1;
+                      - generic: "}"
+                      - generic: const final = subtotal - discount;
+                      - generic: return Number(final.toFixed(2));
+                      - generic: "}"
+              - textbox [ref=e44]: "function calculateTotal(items) { const subtotal = items.reduce((sum, item) => sum + item.price, 0); let discount = 0; if (subtotal > 100) { discount = subtotal * 0.1; } const final = subtotal - discount; return Number(final.toFixed(2)); }"
+              - generic: 256 / 2.000 chars
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]:
+              - switch [checked] [ref=e48]
+              - checkbox [checked] [ref=e50]
+              - generic [ref=e51]: roast mode
+            - generic [ref=e52]: // maximum sarcasm enabled
+          - button "$ roast_my_code" [ref=e53]
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - generic [ref=e61]: "0"
+            - text: codes roasted
+          - generic [ref=e62]: .
+          - generic [ref=e63]:
+            - text: "avg score:"
+            - generic [ref=e66]:
+              - generic [ref=e69]: "0"
+              - generic [ref=e70]:
+                - generic [ref=e72]: ","
+                - generic [ref=e74]: "0"
+            - text: /10
+      - generic [ref=e75]:
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - generic [ref=e78]: //
+            - generic [ref=e79]: shame_leaderboard
+          - link "$ view_all >>" [ref=e80] [cursor=pointer]:
+            - /url: /leaderboard
+        - paragraph [ref=e81]: // the worst code on the internet, ranked by shame
+        - generic [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e84]: rank
+            - generic [ref=e85]: score
+            - generic [ref=e86]: code
+            - generic [ref=e87]: lang
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - generic [ref=e90]: "#1"
+              - generic [ref=e91]: "2.1"
+              - paragraph [ref=e93]: "function calculateTotal(items) {"
+              - generic [ref=e94]: javascript
+            - generic [ref=e95]:
+              - generic [ref=e97]:
+                - generic [ref=e98]:
+                  - generic [ref=e99]: "1"
+                  - generic [ref=e100]: "2"
+                  - generic [ref=e101]: "3"
+                - code [ref=e104]:
+                  - generic [ref=e105]: "function calculateTotal(items) {"
+                  - generic [ref=e106]: var total = 0;
+                  - generic [ref=e107]: "for (let i = 0; i < items.length; i++) {"
+              - button "show more" [ref=e109]
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - generic [ref=e112]: "#2"
+              - generic [ref=e113]: "2.4"
+              - paragraph [ref=e115]: "if (isLoggedIn = true) {"
+              - generic [ref=e116]: typescript
+            - generic [ref=e117]:
+              - generic [ref=e119]:
+                - generic [ref=e120]:
+                  - generic [ref=e121]: "1"
+                  - generic [ref=e122]: "2"
+                  - generic [ref=e123]: "3"
+                - code [ref=e126]:
+                  - generic [ref=e127]: "if (isLoggedIn = true) {"
+                  - generic [ref=e128]: return dashboard();
+                  - generic [ref=e129]: "}"
+              - button "show more" [ref=e131]
+          - generic [ref=e132]:
+            - generic [ref=e133]:
+              - generic [ref=e134]: "#3"
+              - generic [ref=e135]: "2.8"
+              - paragraph [ref=e137]: SELECT * FROM users WHERE email = input;
+              - generic [ref=e138]: sql
+            - generic [ref=e139]:
+              - generic [ref=e141]:
+                - generic [ref=e143]: "1"
+                - code [ref=e146]:
+                  - generic [ref=e147]: SELECT * FROM users WHERE email = input;
+              - button "show more" [ref=e149]
+        - generic [ref=e150]:
+          - generic [ref=e151]: showing top 3 of 3 -
+          - link "view full leaderboard >>" [ref=e152] [cursor=pointer]:
+            - /url: /leaderboard
+  - button "Open Next.js Dev Tools" [ref=e158] [cursor=pointer]:
+    - img [ref=e159]
+  - alert [ref=e162]
