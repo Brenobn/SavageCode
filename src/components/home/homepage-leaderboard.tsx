@@ -1,15 +1,36 @@
 import Link from "next/link";
+import { HomepageLeaderboardRow } from "@/components/home/homepage-leaderboard-row";
 import {
   SectionTitleRoot,
   SectionTitleSlash,
   SectionTitleText,
-  TableRowCode,
-  TableRowLanguage,
-  TableRowRank,
-  TableRowRoot,
-  TableRowScore,
 } from "@/components/ui";
+import { CodeBlock } from "@/components/ui/code-block";
 import { getQueryClient, trpc } from "@/trpc/server";
+
+function toShikiLanguage(language: string): string {
+  switch (language) {
+    case "javascript":
+    case "typescript":
+    case "sql":
+    case "java":
+    case "python":
+    case "go":
+    case "php":
+    case "ruby":
+    case "rust":
+    case "yaml":
+    case "markdown":
+    case "dockerfile":
+    case "bash":
+    case "css":
+    case "html":
+    case "json":
+      return language;
+    default:
+      return "plaintext";
+  }
+}
 
 export async function HomepageLeaderboard() {
   const queryClient = getQueryClient();
@@ -47,21 +68,28 @@ export async function HomepageLeaderboard() {
         </div>
 
         {entries.map((row) => (
-          <TableRowRoot key={row.rank} scoreTone={row.scoreTone}>
-            <TableRowRank>{row.rank}</TableRowRank>
-
-            <div className="w-15">
-              <TableRowScore scoreTone={row.scoreTone}>
-                {row.score.toFixed(1)}
-              </TableRowScore>
-            </div>
-
-            <TableRowCode>
-              <p className="truncate">{row.codePreview}</p>
-            </TableRowCode>
-
-            <TableRowLanguage>{row.language}</TableRowLanguage>
-          </TableRowRoot>
+          <HomepageLeaderboardRow
+            collapsedCodeBlock={
+              <CodeBlock
+                className="border-0"
+                code={row.code.split("\n").slice(0, 3).join("\n")}
+                lang={toShikiLanguage(row.language)}
+              />
+            }
+            codePreview={row.codePreview}
+            expandedCodeBlock={
+              <CodeBlock
+                className="border-0"
+                code={row.code}
+                lang={toShikiLanguage(row.language)}
+              />
+            }
+            key={row.rank}
+            language={row.language}
+            rank={row.rank}
+            score={row.score}
+            scoreTone={row.scoreTone}
+          />
         ))}
       </div>
 

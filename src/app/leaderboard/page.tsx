@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "Leaderboard estatico dos codigos mais roastados no DevRoast.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type LeaderboardEntry = {
   rank: string;
