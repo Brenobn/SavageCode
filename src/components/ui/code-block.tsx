@@ -8,6 +8,7 @@ export interface CodeBlockProps {
   code: string;
   lang: string;
   showLineNumbers?: boolean;
+  wrapLongLines?: boolean;
 }
 
 export interface CodeBlockHeaderProps extends HTMLAttributes<HTMLDivElement> {
@@ -40,6 +41,7 @@ export async function CodeBlock({
   code,
   lang,
   showLineNumbers = true,
+  wrapLongLines = false,
 }: CodeBlockProps) {
   const html = await codeToHtml(code, {
     lang: lang as BundledLanguage,
@@ -62,7 +64,7 @@ export async function CodeBlock({
         ) : null}
 
         <div
-          className="min-w-0 flex-1 overflow-x-auto p-3 [&_code]:font-mono [&_pre]:m-0"
+          className={`min-w-0 flex-1 p-3 [&_code]:font-mono [&_pre]:m-0 ${wrapLongLines ? "overflow-hidden [&_code]:break-words [&_pre]:whitespace-pre-wrap [&_pre]:break-words" : "overflow-x-auto"}`}
           /* biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated server-side by Shiki from source code. */
           dangerouslySetInnerHTML={{ __html: html }}
         />

@@ -222,15 +222,18 @@ export async function listLeaderboard(limit = 20, offset = 0) {
       submissionId: leaderboardEntries.submissionId,
       roastResultId: leaderboardEntries.roastResultId,
       score: leaderboardEntries.score,
-      language: leaderboardEntries.language,
-      lineCount: leaderboardEntries.lineCount,
+      language: submissions.language,
+      lineCount: submissions.lineCount,
       code: submissions.code,
       codePreview: leaderboardEntries.codePreview,
-      createdAt: leaderboardEntries.createdAt,
+      createdAt: sql`"leaderboard_entries"."created_at"`,
     })
     .from(leaderboardEntries)
     .innerJoin(submissions, eq(leaderboardEntries.submissionId, submissions.id))
-    .orderBy(asc(leaderboardEntries.score), asc(leaderboardEntries.createdAt))
+    .orderBy(
+      asc(leaderboardEntries.score),
+      asc(sql`"leaderboard_entries"."created_at"`),
+    )
     .limit(limit)
     .offset(offset);
 }

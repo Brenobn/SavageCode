@@ -1,9 +1,11 @@
+// biome-ignore assist/source/organizeImports: just don´t mind
 import {
   getLeaderboardStats,
   listHomepageLeaderboardTop,
   listLeaderboard,
 } from "@/db/queries/roasts";
 import { createTRPCRouter, publicProcedure } from "@/trpc/init";
+import { unstable_cache } from "next/cache";
 
 type ScoreTone = "critical" | "warning" | "good" | "muted";
 
