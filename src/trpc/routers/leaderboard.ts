@@ -1,7 +1,27 @@
-import { listLeaderboard } from "@/db/queries/roasts";
+import {
+  getLeaderboardStats,
+  listHomepageLeaderboardTop,
+  listLeaderboard,
+} from "@/db/queries/roasts";
 import { createTRPCRouter, publicProcedure } from "@/trpc/init";
 
 type ScoreTone = "critical" | "warning" | "good" | "muted";
+
+type FullLeaderboardResponse = {
+  entries: Array<{
+    rank: string;
+    score: number;
+    scoreTone: ScoreTone;
+    language: string;
+    lineCount: number;
+    codePreview: string;
+    code: string;
+  }>;
+  stats: {
+    totalSubmissions: number;
+    averageScore: number;
+  };
+};
 
 function getScoreTone(score: number): ScoreTone {
   if (score <= 2) {
@@ -21,7 +41,7 @@ function getScoreTone(score: number): ScoreTone {
 
 export const leaderboardRouter = createTRPCRouter({
   homepageTop: publicProcedure.query(async () => {
-    const rows = await listLeaderboard(3, 0);
+    const rows = await listHomepageLeaderboardTop();
 
     return rows.map((row, index) => {
       const scoreNumber = Number(row.score ?? 0);
@@ -34,5 +54,30 @@ export const leaderboardRouter = createTRPCRouter({
         scoreTone: getScoreTone(scoreNumber),
       };
     });
+  }),
+  full: publicProcedure.query(async (): Promise<FullLeaderboardResponse> => {
+    const [rows, stats] = await Promise.all([
+      listLeaderboard(20, 0),
+      getLeaderboardStats(),
+    ]);
+
+    const entries = rows.map((row, index) => {
+      const scoreNumber = Number(row.score ?? 0);
+
+      return {
+        rank: `#${index + 1}`,
+        score: scoreNumber,
+        scoreTone: getScoreTone(scoreNumber),
+        language: row.language,
+        lineCount: row.lineCount,
+        codePreview: row.codePreview,
+        code: row.code,
+      };
+    });
+
+    return {
+      entries,
+      stats,
+    };
   }),
 });
