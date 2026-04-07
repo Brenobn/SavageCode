@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { TopNavbar } from "@/components/ui";
-import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -23,24 +22,22 @@ export default function RootLayout({
   return (
     <html lang="en" className={jetbrainsMono.variable}>
       <body className="font-sans antialiased">
-        <TRPCReactProvider>
-          <TopNavbar.Root>
-            <TopNavbar.Brand>
-              <TopNavbar.Prompt />
-              <TopNavbar.BrandText>
-                <Link href="/">devroast</Link>
-              </TopNavbar.BrandText>
-            </TopNavbar.Brand>
+        <TopNavbar.Root>
+          <TopNavbar.Brand>
+            <TopNavbar.Prompt />
+            <TopNavbar.BrandText>
+              <Link href="/">devroast</Link>
+            </TopNavbar.BrandText>
+          </TopNavbar.Brand>
 
-            <TopNavbar.Right>
-              <TopNavbar.Item>
-                <Link href="/leaderboard">leaderboard</Link>
-              </TopNavbar.Item>
-            </TopNavbar.Right>
-          </TopNavbar.Root>
+          <TopNavbar.Right>
+            <TopNavbar.Item>
+              <Link href="/leaderboard">leaderboard</Link>
+            </TopNavbar.Item>
+          </TopNavbar.Right>
+        </TopNavbar.Root>
 
-          {children}
-        </TRPCReactProvider>
+        {children}
       </body>
     </html>
   );
