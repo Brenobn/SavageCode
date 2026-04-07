@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cacheLife } from "next/cache";
 import type { HTMLAttributes } from "react";
 import { type BundledLanguage, codeToHtml } from "shiki";
 
@@ -43,6 +44,9 @@ export async function CodeBlock({
   showLineNumbers = true,
   wrapLongLines = false,
 }: CodeBlockProps) {
+  "use cache";
+  cacheLife("hours");
+
   const html = await codeToHtml(code, {
     lang: lang as BundledLanguage,
     theme: "vesper",
