@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
+import { Suspense } from "react";
 import {
   AnalysisCardBadge,
   AnalysisCardDescription,
@@ -31,11 +33,11 @@ function isValidRoastId(value: string): boolean {
   return UUID_REGEX.test(value) || NUMERIC_ID_REGEX.test(value);
 }
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata({
   params,
 }: ResultPageProps): Promise<Metadata> {
+  await connection();
+
   const { roastId } = await params;
 
   return {
@@ -45,7 +47,25 @@ export async function generateMetadata({
   };
 }
 
-export default async function RoastResultPage({ params }: ResultPageProps) {
+export default function RoastResultPage({ params }: ResultPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <main className="bg-bg-page text-text-primary">
+          <div className="mx-auto flex w-full max-w-6xl px-10 py-10 md:px-20">
+            <p className="font-mono text-xs text-text-tertiary">loading...</p>
+          </div>
+        </main>
+      }
+    >
+      <RoastResultPageContent params={params} />
+    </Suspense>
+  );
+}
+
+async function RoastResultPageContent({ params }: ResultPageProps) {
+  await connection();
+
   const { roastId } = await params;
 
   if (!isValidRoastId(roastId)) {
