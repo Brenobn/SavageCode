@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { ExpandableCodeBlock } from "@/components/home/expandable-code-block";
 import { CodeBlock } from "@/components/ui/code-block";
-import { getQueryClient, trpc } from "@/trpc/server";
+import { getLeaderboardStats, listLeaderboard } from "@/db/queries/roasts";
 
 export const metadata: Metadata = {
   title: "Leaderboard | DevRoast",
   description: "Leaderboard estatico dos codigos mais roastados no DevRoast.",
 };
-
-export const revalidate = 3600;
 
 type LeaderboardEntry = {
   rank: string;
@@ -64,6 +63,22 @@ function getCollapsedCode(code: string): string {
   return code.split("\n").slice(0, 3).join("\n");
 }
 
+function getScoreTone(score: number): LeaderboardEntry["scoreTone"] {
+  if (score <= 2) {
+    return "critical";
+  }
+
+  if (score <= 3.8) {
+    return "warning";
+  }
+
+  if (score <= 5) {
+    return "muted";
+  }
+
+  return "good";
+}
+
 function getScoreToneClass(scoreTone: LeaderboardEntry["scoreTone"]): string {
   switch (scoreTone) {
     case "critical":
@@ -82,11 +97,26 @@ function getLineCountLabel(lineCount: number): string {
 }
 
 export default async function LeaderboardPage() {
-  const queryClient = getQueryClient();
-  const data = await queryClient.fetchQuery(
-    trpc.leaderboard.full.queryOptions(),
-  );
-  const entries = data.entries;
+  "use cache";
+  cacheLife("hours");
+
+  const [rows, stats] = await Promise.all([
+    listLeaderboard(20, 0),
+    getLeaderboardStats(),
+  ]);
+
+  const entries = rows.map((row, index): LeaderboardEntry => {
+    const scoreNumber = Number(row.score ?? 0);
+
+    return {
+      rank: `#${index + 1}`,
+      score: scoreNumber,
+      scoreTone: getScoreTone(scoreNumber),
+      language: row.language,
+      lineCount: row.lineCount,
+      code: row.code,
+    };
+  });
 
   return (
     <main className="bg-bg-page text-text-primary">
@@ -106,11 +136,9 @@ export default async function LeaderboardPage() {
           </p>
 
           <div className="flex items-center gap-2 font-mono text-xs text-text-tertiary">
-            <span>
-              {data.stats.totalSubmissions.toLocaleString()} submissions
-            </span>
+            <span>{stats.totalSubmissions.toLocaleString()} submissions</span>
             <span>&middot;</span>
-            <span>avg score: {data.stats.averageScore.toFixed(1)}/10</span>
+            <span>avg score: {stats.averageScore.toFixed(1)}/10</span>
           </div>
         </section>
 

@@ -4,8 +4,8 @@ import {
   listHomepageLeaderboardTop,
   listLeaderboard,
 } from "@/db/queries/roasts";
+import { cacheLife } from "next/cache";
 import { createTRPCRouter, publicProcedure } from "@/trpc/init";
-import { unstable_cache } from "next/cache";
 
 type ScoreTone = "critical" | "warning" | "good" | "muted";
 
@@ -41,18 +41,28 @@ function getScoreTone(score: number): ScoreTone {
   return "good";
 }
 
-const getHomepageTopCached = unstable_cache(
-  async () => listHomepageLeaderboardTop(3),
-  ["leaderboard-homepage-top"],
-  {
-    revalidate: 3600,
-    tags: ["leaderboard", "leaderboard-homepage-top"],
-  },
-);
+async function getHomepageTopCached() {
+  "use cache";
+  cacheLife("hours");
+
+  return listHomepageLeaderboardTop();
+}
+
+async function getFullLeaderboardCached() {
+  "use cache";
+  cacheLife("hours");
+
+  const [rows, stats] = await Promise.all([
+    listLeaderboard(20, 0),
+    getLeaderboardStats(),
+  ]);
+
+  return { rows, stats };
+}
 
 export const leaderboardRouter = createTRPCRouter({
   homepageTop: publicProcedure.query(async () => {
-    const rows = await listHomepageLeaderboardTop();
+    const rows = await getHomepageTopCached();
 
     return rows.map((row, index) => {
       const scoreNumber = Number(row.score ?? 0);
@@ -77,10 +87,7 @@ export const leaderboardRouter = createTRPCRouter({
     });
   }),
   full: publicProcedure.query(async (): Promise<FullLeaderboardResponse> => {
-    const [rows, stats] = await Promise.all([
-      listLeaderboard(20, 0),
-      getLeaderboardStats(),
-    ]);
+    const { rows, stats } = await getFullLeaderboardCached();
 
     const entries = rows.map((row, index) => {
       const scoreNumber = Number(row.score ?? 0);

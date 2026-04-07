@@ -1,3 +1,4 @@
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { HomepageLeaderboardRow } from "@/components/home/homepage-leaderboard-row";
 import {
@@ -6,7 +7,28 @@ import {
   SectionTitleText,
 } from "@/components/ui";
 import { CodeBlock } from "@/components/ui/code-block";
-import { getQueryClient, trpc } from "@/trpc/server";
+import {
+  getLeaderboardStats,
+  listHomepageLeaderboardTop,
+} from "@/db/queries/roasts";
+
+type ScoreTone = "critical" | "warning" | "good" | "muted";
+
+function getScoreTone(score: number): ScoreTone {
+  if (score <= 2) {
+    return "critical";
+  }
+
+  if (score <= 3.8) {
+    return "warning";
+  }
+
+  if (score <= 5) {
+    return "muted";
+  }
+
+  return "good";
+}
 
 function toShikiLanguage(language: string): string {
   switch (language) {
@@ -33,12 +55,35 @@ function toShikiLanguage(language: string): string {
 }
 
 export async function HomepageLeaderboard() {
-  const queryClient = getQueryClient();
+  "use cache";
+  cacheLife("hours");
 
-  const [entries, metrics] = await Promise.all([
-    queryClient.fetchQuery(trpc.leaderboard.homepageTop.queryOptions()),
-    queryClient.fetchQuery(trpc.metrics.homepage.queryOptions()),
+  const [rows, stats] = await Promise.all([
+    listHomepageLeaderboardTop(),
+    getLeaderboardStats(),
   ]);
+
+  const entries = rows.map((row, index) => {
+    const scoreNumber = Number(row.score ?? 0);
+    const normalizedLines = row.code
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    const firstLine = normalizedLines[0] ?? row.code.trim();
+    const codePreview =
+      firstLine.length > 120
+        ? `${firstLine.slice(0, 117)}...`
+        : firstLine || "(empty code)";
+
+    return {
+      code: row.code,
+      codePreview,
+      language: row.language,
+      rank: `#${index + 1}`,
+      score: scoreNumber,
+      scoreTone: getScoreTone(scoreNumber),
+    };
+  });
 
   return (
     <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 pb-16">
@@ -91,7 +136,9 @@ export async function HomepageLeaderboard() {
       </div>
 
       <div className="flex justify-center gap-1 py-4 font-sans text-xs text-text-tertiary">
-        <span>showing top 3 of {metrics.totalRoasts.toLocaleString()} -</span>
+        <span>
+          showing top 3 of {stats.totalSubmissions.toLocaleString()} -
+        </span>
         <Link
           className="text-text-secondary underline-offset-4 hover:underline"
           href="/leaderboard"
