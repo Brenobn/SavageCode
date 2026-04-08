@@ -3,7 +3,7 @@
 import NumberFlow from "@number-flow/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { TRPCReactProvider, useTRPC } from "@/trpc/client";
+import { useTRPC } from "@/trpc/client";
 
 function HomepageMetricsContent() {
   const trpc = useTRPC();
@@ -52,9 +52,5 @@ function HomepageMetricsContent() {
 }
 
 export function HomepageMetrics() {
-  return (
-    <TRPCReactProvider>
-      <HomepageMetricsContent />
-    </TRPCReactProvider>
-  );
+  return <HomepageMetricsContent />;
 }

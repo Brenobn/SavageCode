@@ -1,5 +1,7 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Button,
@@ -14,6 +16,7 @@ import {
   getLanguageById,
   type SupportedLanguageId,
 } from "@/lib/code-languages";
+import { TRPCReactProvider, useTRPC } from "@/trpc/client";
 
 const codeSample = [
   "function calculateTotal(items) {",
@@ -31,16 +34,59 @@ const codeSample = [
 
 const CODE_SNIPPET_CHAR_LIMIT = 2000;
 
+type RoastLanguage =
+  | "javascript"
+  | "typescript"
+  | "sql"
+  | "java"
+  | "python"
+  | "bash"
+  | "go"
+  | "rust"
+  | "csharp"
+  | "cpp"
+  | "php"
+  | "ruby"
+  | "unknown";
+
+export function toRoastLanguage(language: SupportedLanguageId): RoastLanguage {
+  switch (language) {
+    case "javascript":
+    case "typescript":
+    case "sql":
+    case "java":
+    case "python":
+    case "bash":
+    case "go":
+    case "rust":
+    case "csharp":
+    case "cpp":
+    case "php":
+    case "ruby":
+      return language;
+    default:
+      return "unknown";
+  }
+}
+
+export function getSubmitButtonLabel(isSubmitting: boolean) {
+  return isSubmitting ? "$ roasting..." : "$ roast_my_code";
+}
+
 interface HomePageClientProps {
   leaderboardSlot: React.ReactNode;
   metricsSlot: React.ReactNode;
 }
 
-export function HomePageClient({
+function HomePageClientContent({
   leaderboardSlot,
   metricsSlot,
 }: HomePageClientProps) {
+  const router = useRouter();
+  const trpc = useTRPC();
   const [code, setCode] = useState(codeSample);
+  const [roastModeEnabled, setRoastModeEnabled] = useState(true);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [detectedLanguage, setDetectedLanguage] = useState<SupportedLanguageId>(
     detectLanguage(codeSample).language,
   );
@@ -48,6 +94,34 @@ export function HomePageClient({
   const isOverCodeLimit = code.length > CODE_SNIPPET_CHAR_LIMIT;
 
   const languageIndicator = `detected: ${getLanguageById(detectedLanguage)?.label ?? "Plaintext"}`;
+
+  const roastMutation = useMutation(
+    trpc.roast.createAndAnalyze.mutationOptions({
+      onMutate: () => {
+        setSubmitError(null);
+      },
+      onSuccess: ({ roastId }) => {
+        router.push(`/result/${roastId}`);
+      },
+      onError: (error) => {
+        setSubmitError(
+          error.message || "Failed to analyze code. Please try again.",
+        );
+      },
+    }),
+  );
+
+  const handleSubmit = () => {
+    if (!hasCode || isOverCodeLimit || roastMutation.isPending) {
+      return;
+    }
+
+    roastMutation.mutate({
+      code,
+      language: toRoastLanguage(detectedLanguage),
+      roastMode: roastModeEnabled ? "maximum" : "normal",
+    });
+  };
 
   useEffect(() => {
     if (code.trim().length === 0) {
@@ -92,7 +166,10 @@ export function HomePageClient({
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <ToggleRoot defaultChecked>
+              <ToggleRoot
+                checked={roastModeEnabled}
+                onCheckedChange={setRoastModeEnabled}
+              >
                 <ToggleControl>
                   <ToggleThumb />
                 </ToggleControl>
@@ -101,14 +178,26 @@ export function HomePageClient({
               <span className="font-mono text-xs text-text-tertiary">
                 {isOverCodeLimit
                   ? `// max ${CODE_SNIPPET_CHAR_LIMIT.toLocaleString()} chars exceeded`
-                  : "// maximum sarcasm enabled"}
+                  : roastModeEnabled
+                    ? "// maximum sarcasm enabled"
+                    : "// balanced critique enabled"}
               </span>
             </div>
 
-            <Button disabled={!hasCode || isOverCodeLimit} variant="primary">
-              $ roast_my_code
+            <Button
+              disabled={!hasCode || isOverCodeLimit || roastMutation.isPending}
+              onClick={handleSubmit}
+              variant="primary"
+            >
+              {getSubmitButtonLabel(roastMutation.isPending)}
             </Button>
           </div>
+
+          {submitError ? (
+            <p className="font-mono text-xs text-accent-red" role="alert">
+              {submitError}
+            </p>
+          ) : null}
 
           {metricsSlot}
         </section>
@@ -116,5 +205,13 @@ export function HomePageClient({
         {leaderboardSlot}
       </div>
     </main>
+  );
+}
+
+export function HomePageClient(props: HomePageClientProps) {
+  return (
+    <TRPCReactProvider>
+      <HomePageClientContent {...props} />
+    </TRPCReactProvider>
   );
 }
