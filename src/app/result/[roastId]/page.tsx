@@ -19,7 +19,11 @@ import {
   StatusBadgeText,
 } from "@/components/ui";
 import { CodeBlock } from "@/components/ui/code-block";
-import { roastResultStatic } from "@/lib/roast-result-static";
+import {
+  getRoastResultBySubmissionId,
+  listLeaderboard,
+} from "@/db/queries/roasts";
+import { toRoastResultViewModel } from "@/lib/roast-result-view-model";
 
 interface ResultPageProps {
   params: Promise<{ roastId: string }>;
@@ -31,6 +35,27 @@ const NUMERIC_ID_REGEX = /^\d+$/;
 
 function isValidRoastId(value: string): boolean {
   return UUID_REGEX.test(value) || NUMERIC_ID_REGEX.test(value);
+}
+
+async function resolveRoastResultByRoastId(roastId: string) {
+  if (NUMERIC_ID_REGEX.test(roastId)) {
+    const numericId = Number(roastId);
+
+    if (!Number.isInteger(numericId) || numericId < 1) {
+      return null;
+    }
+
+    const rows = await listLeaderboard(1, numericId - 1);
+    const submissionId = rows[0]?.submissionId;
+
+    if (!submissionId) {
+      return null;
+    }
+
+    return getRoastResultBySubmissionId(submissionId);
+  }
+
+  return getRoastResultBySubmissionId(roastId);
 }
 
 export async function generateMetadata({
@@ -72,28 +97,34 @@ async function RoastResultPageContent({ params }: ResultPageProps) {
     notFound();
   }
 
+  const roastResult = await resolveRoastResultByRoastId(roastId);
+
+  if (!roastResult || roastResult.status !== "completed") {
+    notFound();
+  }
+
+  const roast = toRoastResultViewModel(roastResult);
+
   return (
     <main className="bg-bg-page text-text-primary">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-10 py-10 md:px-20">
         <section className="flex w-full flex-col items-start gap-10 md:flex-row md:items-center md:gap-12">
-          <ScoreRing value={roastResultStatic.score} />
+          <ScoreRing value={roast.score} />
 
           <div className="flex min-w-0 flex-1 flex-col gap-4">
-            <StatusBadgeRoot tone="critical">
-              <StatusBadgeDot tone="critical" />
-              <StatusBadgeText>
-                {roastResultStatic.verdictLabel}
-              </StatusBadgeText>
+            <StatusBadgeRoot tone={roast.verdictTone}>
+              <StatusBadgeDot tone={roast.verdictTone} />
+              <StatusBadgeText>{roast.verdictLabel}</StatusBadgeText>
             </StatusBadgeRoot>
 
             <p className="font-mono text-xl leading-8 text-text-primary">
-              {roastResultStatic.quote}
+              {roast.quote}
             </p>
 
             <div className="flex items-center gap-4 font-mono text-xs text-text-tertiary">
-              <span>lang: {roastResultStatic.languageLabel}</span>
+              <span>lang: {roast.languageLabel}</span>
               <span>&middot;</span>
-              <span>{roastResultStatic.submittedLineLabel}</span>
+              <span>{roast.submittedLineLabel}</span>
             </div>
 
             <div className="flex items-center gap-3">
@@ -112,8 +143,8 @@ async function RoastResultPageContent({ params }: ResultPageProps) {
 
           <CodeBlock
             className="h-[424px]"
-            code={roastResultStatic.submittedCode}
-            lang={roastResultStatic.languageLabel}
+            code={roast.submittedCode}
+            lang={roast.languageLabel}
           />
         </section>
 
@@ -126,8 +157,8 @@ async function RoastResultPageContent({ params }: ResultPageProps) {
           </SectionTitleRoot>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            {roastResultStatic.issues.map((issue) => (
-              <AnalysisCardRoot key={issue.title} tone={issue.tone}>
+            {roast.issues.map((issue) => (
+              <AnalysisCardRoot key={issue.id} tone={issue.tone}>
                 <AnalysisCardBadge tone={issue.tone}>
                   {issue.label}
                 </AnalysisCardBadge>
@@ -151,12 +182,12 @@ async function RoastResultPageContent({ params }: ResultPageProps) {
           <div className="overflow-hidden border border-border-primary bg-bg-input">
             <div className="flex h-10 items-center border-b border-border-primary px-4">
               <span className="font-mono text-xs text-text-secondary">
-                {roastResultStatic.diffFileLabel}
+                {roast.diffFileLabel}
               </span>
             </div>
 
             <div className="py-1">
-              {roastResultStatic.diffLines.map((line, index) => (
+              {roast.diffLines.map((line, index) => (
                 <DiffLine
                   code={line.code}
                   key={`${line.variant}-${index + 1}`}
