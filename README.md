@@ -43,3 +43,14 @@ pnpm db:down
 ```
 
 Use `.env.example` como base para criar seu `.env` com `DATABASE_URL`.
+
+## Configuracao da IA para roasts
+
+Adicione no `.env`:
+
+```bash
+OPENAI_API_KEY=seu_token_aqui
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Sem `OPENAI_API_KEY`, o fluxo de criacao de roast retorna erro de configuracao no servidor.
